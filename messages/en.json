@@ -1,0 +1,12 @@
+{
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome to our website!",
+    "description": "This is the home page where you can find the latest updates and news.",
+    "about": {
+      "title": "About",
+      "description": "This is the about page where you can find the latest updates and news."
+    },
+    "name": "Hello {name}"
+  }
+}

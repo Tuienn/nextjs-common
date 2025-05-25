@@ -1,0 +1,12 @@
+{
+  "home": {
+    "title": "Trang chủ",
+    "welcome": "Chào mừng bạn đến với trang web của chúng tôi!",
+    "description": "Đây là trang chủ nơi bạn có thể tìm thấy những cập nhật và tin tức mới nhất.",
+    "about": {
+      "title": "Giới thiệu",
+      "description": "Đây là trang giới thiệu nơi bạn có thể tìm thấy thông tin về chúng tôi."
+    },
+    "name": "Xin chào {name}"
+  }
+}
