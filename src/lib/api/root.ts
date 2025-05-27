@@ -1,27 +1,26 @@
-import { queryString } from '../utils/common'
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
   'ngrok-skip-browser-warning': 'true',
-  Accept: 'application/json',
-  Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`
+  Accept: 'application/json'
 }
 
 const apiService = async (
   method: 'POST' | 'PUT' | 'GET' | 'DELETE' | 'PATCH',
-  slashParams: (string | number)[],
-  params?: Record<string, string | number | null | undefined>,
+  url: string,
   data?: Record<string, string | number | null | undefined>,
+  isAuth?: boolean,
   headers?: HeadersInit
 ) => {
-  const fullUrl = `${BASE_URL}/${queryString(slashParams, params)}`
+  const fullUrl = `${BASE_URL}/${url}`
 
   try {
     const response = await fetch(fullUrl, {
       method,
-      headers: defaultHeaders,
+      headers: isAuth
+        ? { ...defaultHeaders, Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY}` }
+        : defaultHeaders,
       body: data ? JSON.stringify(data) : null,
       ...headers
     })

@@ -1,12 +1,17 @@
 {
   "home": {
-    "title": "Trang chủ",
-    "welcome": "Chào mừng bạn đến với trang web của chúng tôi!",
-    "description": "Đây là trang chủ nơi bạn có thể tìm thấy những cập nhật và tin tức mới nhất.",
-    "about": {
-      "title": "Giới thiệu",
-      "description": "Đây là trang giới thiệu nơi bạn có thể tìm thấy thông tin về chúng tôi."
+    "login": "Đăng nhập",
+    "title": {
+      "solution": "Giải pháp ",
+      "name": "quản lý văn bằng chứng chỉ ",
+      "application": "ứng dụng",
+      "description": "Dự án Web3 được xây dựng trên nền tảng Blockchain đảm bảo tính minh bạch cho văn bằng chứng chỉ"
     },
-    "name": "Xin chào {name}"
+    "card": {
+      "title": "Tìm kiếm văn bằng chứng chỉ",
+      "placeholder": "Nhập số chứng chỉ",
+      "button": "Tìm kiếm",
+      "button_qr_code": "Mở camera để quét QR code"
+    }
   }
 }

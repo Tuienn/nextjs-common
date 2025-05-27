@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from '@/i18n/navigation'
 import { useLocale } from 'next-intl'
+import { Button } from '../ui/button'
 
 const LanguageSwitch = () => {
   const locale = useLocale()
@@ -13,20 +14,9 @@ const LanguageSwitch = () => {
   }
 
   return (
-    <div className='flex gap-2'>
-      <button
-        className={`rounded px-3 py-1 ${locale === 'en' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => switchLocale('en')}
-      >
-        English
-      </button>
-      <button
-        className={`rounded px-3 py-1 ${locale === 'vi' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => switchLocale('vi')}
-      >
-        Tiếng Việt
-      </button>
-    </div>
+    <Button variant='secondary' size='icon' onClick={() => switchLocale(locale === 'en' ? 'vi' : 'en')}>
+      {locale === 'vi' ? 'VI' : 'EN'}
+    </Button>
   )
 }
 

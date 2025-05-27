@@ -116,7 +116,7 @@
     @apply text-2xl font-bold;
   }
   h2 {
-    @apply text-xl font-medium;
+    @apply text-base font-medium sm:text-xl;
   }
 
   h3 {
@@ -128,4 +128,8 @@
   p {
     @apply text-base font-normal;
   }
+}
+
+.container {
+  @apply w-full px-4 sm:w-full sm:max-w-none sm:px-6 md:mx-auto md:max-w-[768px] md:px-8 lg:mx-auto lg:max-w-none lg:px-10 xl:mx-auto xl:max-w-[1280px] xl:px-20 2xl:mx-auto 2xl:max-w-[1536px] 2xl:px-24;
 }

@@ -1,12 +1,17 @@
 {
   "home": {
-    "title": "Home",
-    "welcome": "Welcome to our website!",
-    "description": "This is the home page where you can find the latest updates and news.",
-    "about": {
-      "title": "About",
-      "description": "This is the about page where you can find the latest updates and news."
+    "login": "Login",
+    "title": {
+      "solution": "Solution ",
+      "name": "certificate management ",
+      "application": "by",
+      "description": "Web3 project built on Blockchain platform ensures transparency for certificates"
     },
-    "name": "Hello {name}"
+    "card": {
+      "title": "Look up certificates",
+      "placeholder": "Enter the certificate number",
+      "button": "Search",
+      "button_qr_code": "Open camera to scan QR code"
+    }
   }
 }
