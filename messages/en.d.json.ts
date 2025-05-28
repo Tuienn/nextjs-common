@@ -3,7 +3,6 @@
 
 declare const messages: {
   "home": {
-    "login": "Login",
     "title": {
       "solution": "Solution ",
       "name": "certificate management ",
@@ -13,8 +12,57 @@ declare const messages: {
     "card": {
       "title": "Look up certificates",
       "placeholder": "Enter the certificate number",
-      "button": "Search",
+      "button": "Verify",
       "button_qr_code": "Open camera to scan QR code"
+    },
+    "technology": {
+      "title": "Technology platforms used",
+      "view_more": "View more",
+      "nextjs": {
+        "descryption_1": "Next.js is a React-based framework that enhances web development by enabling server-side rendering (SSR) and static site generation (SSG) out of the box.",
+        "descryption_2": "It offers a wide range of features, including routing, API routes, image optimization, and TypeScript/JavaScript support, making it a powerful choice for building flexible and high-performance web applications."
+      },
+      "mongodb": {
+        "descryption_1": "MongoDB is a widely used NoSQL document-oriented database that stores data in flexible, JSON-like documents, enabling rapid development and iteration.",
+        "descryption_2": "Its horizontal scalability and powerful query capabilities make it a preferred choice for handling large, unstructured datasets."
+      },
+      "golang": {
+        "descryption_1": "Go is a statically typed, compiled programming language designed by Google to prioritize simplicity, concurrency, and high performance.",
+        "descryption_2": "It has become popular for building scalable backend services, cloud-native applications, and distributed systems."
+      },
+      "fabric": {
+        "descryption_1": "Hyperledger Fabric is a permissioned blockchain framework designed for enterprise solutions, providing modular architecture and pluggable consensus protocols.",
+        "descryption_2": "It supports smart contracts (chaincode) and offers high scalability, privacy, and performance for complex business networks."
+      }
+    },
+    "appilcation": {
+      "title": "Application Flow",
+      "title_1": "User Interface (Next.js)",
+      "descryption_1": "The user interacts with the web application built on Next.js, which handles routing, rendering, and client-side logic.",
+      "title_2": "API Requests (Go Backend)",
+      "descryption_2": "When the user performs actions (e.g., submitting data or requesting information), Next.js sends HTTP requests to the Go backend API.",
+      "title_3": "Business Logic & Database Operations (Go + MongoDB)",
+      "descryption_3": "The Go backend processes requests, applies business logic, and interacts with MongoDB to read/write application data (user profiles, metadata, etc.).",
+      "title_4": "Blockchain Transactions (Fabric Hyperledger)",
+      "descryption_4": "For critical, auditable operations (e.g., transaction records, asset ownership), the Go backend communicates with Fabric Hyperledger to submit and query blockchain transactions ensuring transparency and immutability.",
+      "title_5": "Response Handling",
+      "descryption_5": "The Go backend sends processed data or transaction results back to the Next.js frontend.",
+      "title_6": "User Feedback",
+      "descryption_6": "The frontend updates the UI to reflect the latest state, providing feedback or updated views based on the backend response."
+    }
+  },
+  "header": {
+    "login": "Login",
+    "avatar": {
+      "settings": "Settings",
+      "profile": "Profile",
+      "logout": "Logout",
+      "logout_dialog": {
+        "title": "Logout",
+        "description": "Are you sure you want to logout?",
+        "cancel": "Cancel",
+        "confirm": "Logout"
+      }
     }
   }
 };

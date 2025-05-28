@@ -1,5 +1,11 @@
+import Header from '@/components/common/header'
+
 const StudentPage = () => {
-  return <div>StudentPage</div>
+  return (
+    <main>
+      <Header role='student' />
+    </main>
+  )
 }
 
 export default StudentPage

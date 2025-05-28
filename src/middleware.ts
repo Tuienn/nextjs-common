@@ -18,29 +18,29 @@ export default auth((req: any) => {
     pathname = '/' + nextUrl.pathname.split('/').slice(2).join('/')
   }
 
-  const protectedRoutes = ['/student', '/lecturer', '/admin']
+  // const protectedRoutes = ['/student', '/lecturer', '/admin']
 
-  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
+  // const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route))
 
-  if (!isLoggedIn && isProtectedRoute) {
-    const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
-    return NextResponse.redirect(new URL(`/${locale}`, nextUrl))
-  }
+  // if (!isLoggedIn && isProtectedRoute) {
+  //   const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
+  //   return NextResponse.redirect(new URL(`/${locale}`, nextUrl))
+  // }
 
-  if (isLoggedIn && req.auth?.user?.role === 'admin') {
-    const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
-    return NextResponse.redirect(new URL(`/${locale}/admin`, nextUrl))
-  }
+  // if (isLoggedIn && req.auth?.user?.role === 'admin') {
+  //   const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
+  //   return NextResponse.redirect(new URL(`/${locale}/admin`, nextUrl))
+  // }
 
-  if (isLoggedIn && req.auth?.user?.role === 'student') {
-    const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
-    return NextResponse.redirect(new URL(`/${locale}/student`, nextUrl))
-  }
+  // if (isLoggedIn && req.auth?.user?.role === 'student') {
+  //   const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
+  //   return NextResponse.redirect(new URL(`/${locale}/student`, nextUrl))
+  // }
 
-  if (isLoggedIn && req.auth?.user?.role === 'lecturer') {
-    const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
-    return NextResponse.redirect(new URL(`/${locale}/lecturer`, nextUrl))
-  }
+  // if (isLoggedIn && req.auth?.user?.role === 'lecturer') {
+  //   const locale = pathnameHasLocale ? nextUrl.pathname.split('/')[1] : routing.defaultLocale
+  //   return NextResponse.redirect(new URL(`/${locale}/lecturer`, nextUrl))
+  // }
 
   return intlMiddleware(req)
 })
