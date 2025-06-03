@@ -1,32 +1,90 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
+const TOKEN = process.env.NEXT_PUBLIC_API_KEY || ''
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
-  'ngrok-skip-browser-warning': 'true',
+
   Accept: 'application/json'
 }
 
 const apiService = async (
   method: 'POST' | 'PUT' | 'GET' | 'DELETE' | 'PATCH',
   url: string,
-  data?: Record<string, string | number | null | undefined>,
-  isAuth?: boolean,
+  data?: Record<string, string | number | null | undefined> | FormData,
+  isAuth: boolean = true,
   headers?: HeadersInit
 ) => {
-  const fullUrl = `${BASE_URL}/${url}`
+  const fullUrl = `${BASE_URL}/api/v1/${url}`
+
+  const isFormData = data instanceof FormData
+
+  const headersAPI = {
+    ...(isFormData ? {} : defaultHeaders),
+    ...headers,
+    ...(isAuth ? { Authorization: `Bearer ${TOKEN}` } : {})
+  }
+
+  if (isFormData && headersAPI['Content-Type']) {
+    delete headersAPI['Content-Type']
+  }
 
   try {
     const response = await fetch(fullUrl, {
       method,
-      headers: isAuth
-        ? { ...defaultHeaders, Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_KEY}` }
-        : defaultHeaders,
-      body: data ? JSON.stringify(data) : null,
-      ...headers
+      headers: headersAPI,
+      body: data ? (isFormData ? data : JSON.stringify(data)) : null
     })
 
-    return await response.json()
+    console.log(method + ' ' + fullUrl)
+
+    if (isFormData) {
+      console.log('Sending FormData with headers:', headersAPI)
+    }
+
+    const contentType = response.headers.get('content-type')
+
+    if (!response.ok) {
+      let errorData
+      let errorMessage = `API Error: ${response.status} - ${response.statusText}`
+
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          errorData = await response.json()
+          console.error('Error response:', errorData)
+
+          if (errorData.error) {
+            errorMessage = errorData.error
+          } else if (errorData.message) {
+            errorMessage = errorData.message
+          }
+        } catch (parseError) {
+          console.error('Failed to parse JSON error response:', parseError)
+        }
+      } else {
+        try {
+          const errorText = await response.text()
+          console.error('Error response (text):', errorText)
+          errorMessage = errorText || errorMessage
+        } catch (parseError) {
+          console.error('Failed to read text error response:', parseError)
+        }
+      }
+
+      const error = new Error(errorMessage) as any
+      error.status = response.status
+      error.data = errorData
+      throw error
+    }
+
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json()
+    } else {
+      const text = await response.text()
+      console.warn('Response is not JSON:', text)
+      return { error: 'Response is not JSON', data: text }
+    }
   } catch (error) {
+    console.error('API Service Error:', error)
     throw error
   }
 }

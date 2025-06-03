@@ -15,24 +15,24 @@ import {
 } from '../ui/navigation-menu'
 import Link from 'next/link'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
-
+import { ADMIN_PAGE_TITLE } from '@/constants/common'
 interface Props {
   role: 'student' | 'admin' | 'lecturer' | null
 }
 
 const adminStudentManagement: { title: string; href: string; description: string }[] = [
   {
-    title: 'Quản lý thông tin sinh viên',
+    title: ADMIN_PAGE_TITLE.STUDENT_MANAGEMENT,
     href: '/admin/student-management',
     description: 'Quản lý thông tin của sinh viên toàn trường.'
   },
   {
-    title: 'Quản lý điểm sinh viên',
+    title: ADMIN_PAGE_TITLE.SCORE_MANAGEMENT,
     href: '/admin/score-management',
     description: 'Quản lý điểm theo từng môn học và từng học kỳ.'
   },
   {
-    title: 'Quản lý văn bằng, chứng chỉ',
+    title: ADMIN_PAGE_TITLE.CERTIFICATE_MANAGEMENT,
     href: '/admin/certificate-management',
     description: 'Cấp phát, lưu trữ và xác thực các văn bằng, chứng chỉ.'
   }
@@ -40,22 +40,22 @@ const adminStudentManagement: { title: string; href: string; description: string
 
 const adminAcademicManagement: { title: string; href: string; description: string }[] = [
   {
-    title: 'Quản lý khoa',
+    title: ADMIN_PAGE_TITLE.FACULTY_MANAGEMENT,
     href: '/admin/faculty-management',
     description: 'Quản lý các khoa trong trường.'
   },
   {
-    title: 'Quản lý lớp học',
+    title: ADMIN_PAGE_TITLE.CLASS_MANAGEMENT,
     href: '/admin/class-management',
     description: 'Quản lý các lớp học trong trường theo từng khóa.'
   },
   {
-    title: 'Quản lý môn học',
+    title: ADMIN_PAGE_TITLE.COURSE_MANAGEMENT,
     href: '/admin/subject-management',
     description: 'Quản lý danh mục môn học giảng dạy theo từng khóa.'
   },
   {
-    title: 'Quản lý giảng viên',
+    title: ADMIN_PAGE_TITLE.LECTURER_MANAGEMENT,
     href: '/admin/lecturer-management',
     description: 'Quản lý các giảng viên trong trường.'
   }
@@ -76,7 +76,7 @@ const Header: React.FC<Props> = (props) => {
               </SheetTrigger>
 
               <SheetContent side={'left'}>
-                <SheetHeader>
+                <SheetHeader className='mb-4'>
                   <SheetTitle className='text-start'>Chức năng</SheetTitle>
                 </SheetHeader>
                 <Accordion type='single' collapsible className='w-full'>
@@ -84,7 +84,7 @@ const Header: React.FC<Props> = (props) => {
                     <AccordionTrigger>Quản lý sinh viên</AccordionTrigger>
                     <AccordionContent>
                       <div className='flex flex-col gap-2'>
-                        {navList.map((item) => (
+                        {adminStudentManagement.map((item) => (
                           <div className='cursor-pointer rounded-md px-4 py-2 hover:bg-accent' key={item.href}>
                             <Link href={item.href}>
                               <b className='mb-1 text-sm'>{item.title}</b>
@@ -99,7 +99,7 @@ const Header: React.FC<Props> = (props) => {
                     <AccordionTrigger>Quản lý đào tạo</AccordionTrigger>
                     <AccordionContent>
                       <div className='flex flex-col gap-2'>
-                        {navList.map((item) => (
+                        {adminAcademicManagement.map((item) => (
                           <div className='cursor-pointer rounded-md px-4 py-2 hover:bg-accent' key={item.href}>
                             <Link href={item.href}>
                               <b className='mb-1 text-sm'>{item.title}</b>
@@ -117,7 +117,10 @@ const Header: React.FC<Props> = (props) => {
           </div>
         ) : null}
 
-        <Image src={XrmSvg} alt='xrm' width={100} height={100} />
+        <Link href='/'>
+          {' '}
+          <Image src={XrmSvg} alt='xrm' width={100} height={100} />
+        </Link>
 
         {props.role !== null ? (
           <NavigationMenu className='hidden md:flex md:gap-2'>
@@ -137,8 +140,6 @@ const Header: React.FC<Props> = (props) => {
                   ))}
                 </NavigationMenuContent>
               </NavigationMenuItem>
-            </NavigationMenuList>
-            <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>Quản lý đào tạo</NavigationMenuTrigger>
                 <NavigationMenuContent className='!w-[300px] p-2'>
@@ -159,7 +160,13 @@ const Header: React.FC<Props> = (props) => {
         ) : null}
 
         <div className='flex items-center gap-2'>
-          {props.role !== null ? <SignOutButton /> : <Button>Đăng nhập</Button>}
+          {props.role !== null ? (
+            <SignOutButton />
+          ) : (
+            <Button>
+              <Link href='/auth/sign-in'>Đăng nhập</Link>
+            </Button>
+          )}
           <ThemeSwitch />
         </div>
       </header>
