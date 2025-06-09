@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '../ui/button'
 
 import {
@@ -11,12 +13,15 @@ import {
   AlertDialogTrigger
 } from '../ui/alert-dialog'
 import { LogOutIcon } from 'lucide-react'
-
+import { signOut } from '@/lib/auth/auth'
 const SignOutButton = () => {
+  const handleSignOut = () => {
+    signOut()
+  }
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant='destructive' size='icon'>
+        <Button variant='destructive' size={'icon'}>
           <LogOutIcon />
         </Button>
       </AlertDialogTrigger>
@@ -25,7 +30,7 @@ const SignOutButton = () => {
         <AlertDialogDescription>Bạn có chắc chắn muốn đăng xuất không?</AlertDialogDescription>
         <AlertDialogFooter>
           <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-          <AlertDialogAction>Đăng xuất</AlertDialogAction>
+          <AlertDialogAction onClick={handleSignOut}>Đăng xuất</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

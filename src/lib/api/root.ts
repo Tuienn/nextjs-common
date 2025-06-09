@@ -1,5 +1,6 @@
+import { getSession } from '../auth/session'
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ''
-const TOKEN = process.env.NEXT_PUBLIC_API_KEY || ''
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
@@ -21,7 +22,7 @@ const apiService = async (
   const headersAPI = {
     ...(isFormData ? {} : defaultHeaders),
     ...headers,
-    ...(isAuth ? { Authorization: `Bearer ${TOKEN}` } : {})
+    ...(isAuth ? { Authorization: `Bearer ${(await getSession())?.access_token}` } : {})
   }
 
   if (isFormData && headersAPI['Content-Type']) {
@@ -36,10 +37,6 @@ const apiService = async (
     })
 
     console.log(method + ' ' + fullUrl)
-
-    if (isFormData) {
-      console.log('Sending FormData with headers:', headersAPI)
-    }
 
     const contentType = response.headers.get('content-type')
 

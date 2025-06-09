@@ -21,13 +21,13 @@
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-toast": "^1.2.14",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
-    "dayjs": "^1.11.13",
     "input-otp": "^1.4.2",
     "jose": "^6.0.11",
     "lucide-react": "^0.511.0",
@@ -40,8 +40,7 @@
     "swr": "^2.3.3",
     "tailwind-merge": "^3.3.0",
     "viem": "^2.30.0",
-    "zod": "^3.25.32",
-    "zustand": "^5.0.5"
+    "zod": "^3.25.32"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

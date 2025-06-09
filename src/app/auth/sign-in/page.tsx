@@ -1,19 +1,19 @@
 'use client'
-
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
-import { bigint, z } from 'zod'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form } from '@/components/ui/form'
 import CustomFormItem from '@/components/common/ct-form-item'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import XrmSvg from '@/assets/svg/xrm.svg'
-import background from '@/assets/images/background.jpg'
+import XrmSvg from '../../../../public/assets/svg/xrm.svg'
+import background from '../../../../public/assets/images/background.jpg'
 import { signIn } from '@/lib/auth/auth'
 import { useToast } from '@/hooks/use-toast'
-import { validateEmail, validatePassword } from '@/lib/utils/validators'
 import Link from 'next/link'
+import { validateEmail, validatePassword } from '@/lib/utils/validators'
+import { useRouter } from 'next/navigation'
 const formSchma = z.object({
   email: validateEmail,
   password: validatePassword
@@ -21,6 +21,7 @@ const formSchma = z.object({
 
 const AuthPage = () => {
   const { toast } = useToast()
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchma>>({
     resolver: zodResolver(formSchma),
     defaultValues: {
@@ -42,6 +43,7 @@ const AuthPage = () => {
         title: 'Thành công',
         description: 'Đăng nhập thành công'
       })
+      router.refresh()
     }
   }
 
@@ -49,7 +51,7 @@ const AuthPage = () => {
     <div className='relative bottom-0 left-0 right-0 top-0 h-screen'>
       <Image src={background} width={1500} height={1500} className='h-full w-full object-cover' alt='no-image' />
       <Dialog open>
-        <DialogContent className='max-w-[450px] rounded-lg [&>button]:hidden'>
+        <DialogContent className='rounded-lg sm:max-w-[450px] [&>button]:hidden'>
           <DialogHeader>
             <DialogTitle>
               <div>

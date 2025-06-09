@@ -1,9 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import ActionButtonTable from './action-button-table'
+import { PAGE_SIZE } from '@/constants/common'
 
 interface Props {
-  headers: { className?: string; label: string; value: string }[]
+  children: { className?: string; header: string; value: string; render?: (item: any) => React.ReactNode }[]
   data: any[]
+  page?: number
+  pageSize?: number
 }
 
 const TableList: React.FC<Props> = (props) => {
@@ -11,26 +13,23 @@ const TableList: React.FC<Props> = (props) => {
     <Table className='mt-4'>
       <TableHeader>
         <TableRow>
-          {props.headers.map((header, index) => (
-            <TableHead key={index} className={header.className}>
-              {header.label}
-            </TableHead>
+          <TableHead>STT</TableHead>
+          {props.children.map((header, index) => (
+            <TableHead key={index}>{header.header}</TableHead>
           ))}
         </TableRow>
       </TableHeader>
       <TableBody className='overflow-y-auto'>
         {props.data.map((item, index) => (
           <TableRow key={index}>
-            {props.headers.map((header, index) => (
+            <TableCell>{index + 1 + ((props.page ?? 1) - 1) * (props.pageSize ?? PAGE_SIZE)}</TableCell>
+            {props.children.map((child, index) => (
               <TableCell key={index}>
-                <div className={`${header.className} truncate`} title={item[header.value]}>
-                  {item[header.value]}
+                <div className={`${child.className} truncate`}>
+                  {child.render ? child.render(item) : item[child.value]}
                 </div>
               </TableCell>
             ))}
-            <TableCell>
-              <ActionButtonTable id={item.id} />
-            </TableCell>
           </TableRow>
         ))}
       </TableBody>

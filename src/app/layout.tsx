@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { ThemeProvider } from '@/components/providers/context/theme-provider'
-import SWRConfig from '@/components/providers/context/swr-config'
+import { ThemeProvider } from '@/components/providers/theme-provider'
+import SWRConfig from '@/components/providers/swr-config'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 

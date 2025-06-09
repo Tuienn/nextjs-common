@@ -12,11 +12,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
 }
 
 export const clearFalsyValueObject = (obj: Record<string, any>) => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(
-      (entry) => entry[1] !== null && entry[1] !== undefined && entry[1] !== '' && !isNaN(entry[1])
-    )
-  )
+  return Object.fromEntries(Object.entries(obj).filter((entry) => entry[1] !== null && entry[1] !== undefined))
 }
 
 export const queryString = (slashParams: (string | number)[], params?: any) => {

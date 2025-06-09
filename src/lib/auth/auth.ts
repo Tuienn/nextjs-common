@@ -11,22 +11,20 @@ export async function signOut() {
 
 export async function signIn(payload: { email: string; password: string }) {
   try {
-    const response = await apiService('POST', 'auth/login', payload, false)
-    const data = await response.json()
+    const data = await apiService('POST', 'auth/login', payload, false)
 
-    if (data.status !== 200) {
+    if (!data.token) {
       return false
     }
 
     await createSession({
-      access_token: data.data.access_token,
-      id: data.data.id,
-      role: data.data.role
+      access_token: data.token,
+      role: data.role
     })
 
     return true
   } catch (error) {
-    console.error(error)
+    console.error('Error sign in', error)
     return false
   }
 }

@@ -1,68 +1,59 @@
 import { Button } from '../ui/button'
-import XrmSvg from '@/assets/svg/xrm.svg'
+import XrmSvg from '../../../public/assets/svg/xrm.svg'
 import ThemeSwitch from './theme-switch'
 import Image from 'next/image'
 import SignOutButton from './signout-button'
-import { MenuIcon } from 'lucide-react'
+import { LogIn, MenuIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet'
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger
+  navigationMenuTriggerStyle
 } from '../ui/navigation-menu'
 import Link from 'next/link'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
-import { ADMIN_PAGE_TITLE } from '@/constants/common'
+
 interface Props {
-  role: 'student' | 'admin' | 'lecturer' | null
+  role: 'student' | 'admin' | null
 }
 
-const adminStudentManagement: { title: string; href: string; description: string }[] = [
+const educationAdminPages: { title: string; href: string }[] = [
   {
-    title: ADMIN_PAGE_TITLE.STUDENT_MANAGEMENT,
-    href: '/admin/student-management',
-    description: 'Quản lý thông tin của sinh viên toàn trường.'
+    title: 'Quản lý khoa',
+    href: '/education-admin/faculty-management'
   },
   {
-    title: ADMIN_PAGE_TITLE.SCORE_MANAGEMENT,
-    href: '/admin/score-management',
-    description: 'Quản lý điểm theo từng môn học và từng học kỳ.'
+    title: 'Quản lý sinh viên',
+    href: '/education-admin/student-management'
   },
   {
-    title: ADMIN_PAGE_TITLE.CERTIFICATE_MANAGEMENT,
-    href: '/admin/certificate-management',
-    description: 'Cấp phát, lưu trữ và xác thực các văn bằng, chứng chỉ.'
+    title: 'Quản lý điểm',
+    href: '/education-admin/score-management'
+  },
+  {
+    title: 'Quản lý chứng chỉ',
+    href: '/education-admin/certificate-management'
   }
 ]
 
-const adminAcademicManagement: { title: string; href: string; description: string }[] = [
+const studentPages: { title: string; href: string }[] = [
   {
-    title: ADMIN_PAGE_TITLE.FACULTY_MANAGEMENT,
-    href: '/admin/faculty-management',
-    description: 'Quản lý các khoa trong trường.'
+    title: 'Thông tin cá nhân',
+    href: '/student/information'
   },
   {
-    title: ADMIN_PAGE_TITLE.CLASS_MANAGEMENT,
-    href: '/admin/class-management',
-    description: 'Quản lý các lớp học trong trường theo từng khóa.'
+    title: 'Kết quả học tập',
+    href: '/student/score'
   },
   {
-    title: ADMIN_PAGE_TITLE.COURSE_MANAGEMENT,
-    href: '/admin/subject-management',
-    description: 'Quản lý danh mục môn học giảng dạy theo từng khóa.'
-  },
-  {
-    title: ADMIN_PAGE_TITLE.LECTURER_MANAGEMENT,
-    href: '/admin/lecturer-management',
-    description: 'Quản lý các giảng viên trong trường.'
+    title: 'Thông tin chứng chỉ',
+    href: '/student/certificate'
   }
 ]
 
 const Header: React.FC<Props> = (props) => {
-  const navList = props.role === 'admin' ? adminStudentManagement : adminAcademicManagement
+  const navList = props.role === 'admin' ? educationAdminPages : studentPages
   return (
     <div className='fixed top-0 z-10 h-16 w-full bg-primary-foreground shadow-lg'>
       <header className='container flex h-full items-center justify-between'>
@@ -79,38 +70,13 @@ const Header: React.FC<Props> = (props) => {
                 <SheetHeader className='mb-4'>
                   <SheetTitle className='text-start'>Chức năng</SheetTitle>
                 </SheetHeader>
-                <Accordion type='single' collapsible className='w-full'>
-                  <AccordionItem value='1'>
-                    <AccordionTrigger>Quản lý sinh viên</AccordionTrigger>
-                    <AccordionContent>
-                      <div className='flex flex-col gap-2'>
-                        {adminStudentManagement.map((item) => (
-                          <div className='cursor-pointer rounded-md px-4 py-2 hover:bg-accent' key={item.href}>
-                            <Link href={item.href}>
-                              <b className='mb-1 text-sm'>{item.title}</b>
-                              <p className='text-sm text-muted-foreground'>{item.description}</p>
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value='2'>
-                    <AccordionTrigger>Quản lý đào tạo</AccordionTrigger>
-                    <AccordionContent>
-                      <div className='flex flex-col gap-2'>
-                        {adminAcademicManagement.map((item) => (
-                          <div className='cursor-pointer rounded-md px-4 py-2 hover:bg-accent' key={item.href}>
-                            <Link href={item.href}>
-                              <b className='mb-1 text-sm'>{item.title}</b>
-                              <p className='text-sm text-muted-foreground'>{item.description}</p>
-                            </Link>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {navList.map((item) => (
+                  <Link href={item.href} key={item.href}>
+                    <Button variant={'link'} className='flex-start mb-2 block pr-0'>
+                      {item.title}
+                    </Button>
+                  </Link>
+                ))}
               </SheetContent>
             </Sheet>
             <div className='h-9 w-9'></div>
@@ -125,36 +91,13 @@ const Header: React.FC<Props> = (props) => {
         {props.role !== null ? (
           <NavigationMenu className='hidden md:flex md:gap-2'>
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Quản lý sinh viên</NavigationMenuTrigger>
-                <NavigationMenuContent className='!w-[300px] p-2'>
-                  {adminStudentManagement.map((item) => (
-                    <div key={item.href} className='mb-2 rounded-md p-2 hover:bg-accent'>
-                      <NavigationMenuLink asChild>
-                        <Link href={item.href}>
-                          <b className='mb-1 text-sm'>{item.title}</b>
-                          <p className='text-sm text-muted-foreground'>{item.description}</p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </div>
-                  ))}
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Quản lý đào tạo</NavigationMenuTrigger>
-                <NavigationMenuContent className='!w-[300px] p-2'>
-                  {adminAcademicManagement.map((item) => (
-                    <div key={item.href} className='mb-2 rounded-md p-2 hover:bg-accent'>
-                      <NavigationMenuLink asChild>
-                        <Link href={item.href}>
-                          <b className='mb-1 text-sm'>{item.title}</b>
-                          <p className='text-sm text-muted-foreground'>{item.description}</p>
-                        </Link>
-                      </NavigationMenuLink>
-                    </div>
-                  ))}
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+              {navList.map((item) => (
+                <NavigationMenuItem key={item.href}>
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link href={item.href}>{item.title}</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
         ) : null}

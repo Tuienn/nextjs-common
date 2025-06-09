@@ -4,68 +4,98 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import CustomFormItem from '@/components/common/ct-form-item'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import XrmSvg from '@/assets/svg/xrm.svg'
-import background from '@/assets/images/background.jpg'
-import { signIn } from '@/lib/auth/auth'
+import XrmSvg from '../../../../public/assets/svg/xrm.svg'
+import background from '../../../../public/assets/images/background.jpg'
 import { useToast } from '@/hooks/use-toast'
 import { validateEmail, validatePassword } from '@/lib/utils/validators'
 import Link from 'next/link'
-import { InputOTPGroup } from '@/components/ui/input-otp'
+import { InputOTPGroup, InputOTPSeparator } from '@/components/ui/input-otp'
 import { InputOTPSlot } from '@/components/ui/input-otp'
 import { InputOTP } from '@/components/ui/input-otp'
 import { useState } from 'react'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import useSWRMutation from 'swr/mutation'
+import { registerAccount, sendOTP, verifyOTP } from '@/lib/api/auth'
+import { toastNoti } from '@/lib/utils/common'
+import { REGEXP_ONLY_DIGITS } from 'input-otp'
+import { signIn } from '@/lib/auth/auth'
+import { useRouter } from 'next/navigation'
 const formPersonalEmailSchma = z.object({
   email: validateEmail,
-  password: validatePassword,
-
-  otp: z
-    .string()
-    .trim()
-    .nonempty({
-      message: 'Vui lòng nhập mã OTP'
-    })
-    .min(6, {
-      message: 'Mã OTP phải có 6 ký tự'
-    })
+  password: validatePassword
 })
 
-const formMicrosoftEmailSchma = z.object({
-  microsoft_email: validateEmail,
-  otp: z.string().trim().nonempty({
-    message: 'Vui lòng nhập mã OTP'
-  })
-})
 const AuthPage = () => {
   const { toast } = useToast()
   const [isOTPSended, setIsOTPSended] = useState(false)
+  const [isOTPVerified, setIsOTPVerified] = useState(false)
   const formPersonalEmail = useForm<z.infer<typeof formPersonalEmailSchma>>({
     resolver: zodResolver(formPersonalEmailSchma),
     defaultValues: {
       email: '',
-      password: '',
-
-      otp: ''
+      password: ''
     }
   })
-  const formMicrosoftEmail = useForm<z.infer<typeof formMicrosoftEmailSchma>>({
-    resolver: zodResolver(formMicrosoftEmailSchma),
-    defaultValues: {
-      microsoft_email: '',
-      otp: ''
+  const router = useRouter()
+  const [inputEmail, setInputEmail] = useState('')
+  const [inputOTP, setInputOTP] = useState('')
+  const [idUserAfterVerifyOTP, setIdUserAfterVerifyOTP] = useState('')
+  const mutateSendOTP = useSWRMutation('/auth/request-otp', () => sendOTP(inputEmail), {
+    onSuccess: () => {
+      toast(toastNoti('success', `Mã OTP đã được gửi đến email ${inputEmail}`))
+      setIsOTPSended(true)
+    },
+    onError: (error) => {
+      toast(toastNoti('error', error.message || error.error))
     }
   })
 
-  const handleSubmit = async (data: z.infer<typeof formPersonalEmailSchma>) => {}
+  const mutateVerifyOTP = useSWRMutation('/auth/verify-otp', () => verifyOTP(inputEmail, inputOTP), {
+    onSuccess: (data) => {
+      toast(toastNoti('success', 'Xác thực thành công'))
+      setIsOTPVerified(true)
+      setIdUserAfterVerifyOTP(data.user_id)
+    },
+    onError: (error) => {
+      toast(toastNoti('error', error.message || error.error))
+    }
+  })
+
+  const mutateRegisterAccount = useSWRMutation(
+    '/auth/register',
+    (_, { arg }: { arg: any }) => registerAccount(arg.email, arg.password, idUserAfterVerifyOTP),
+    {
+      onSuccess: () => {
+        toast(toastNoti('success', 'Đăng ký tài khoản thành công'))
+        signIn({
+          email: formPersonalEmail.getValues('email'),
+          password: formPersonalEmail.getValues('password')
+        })
+        router.refresh()
+      },
+      onError: (error) => {
+        toast(toastNoti('error', error.message || error.error))
+      }
+    }
+  )
+
+  const handleSubmit = async (data: z.infer<typeof formPersonalEmailSchma>) => {
+    mutateRegisterAccount.trigger({
+      email: data.email,
+      password: data.password
+    })
+  }
 
   return (
     <div className='relative bottom-0 left-0 right-0 top-0 h-screen'>
       <Image src={background} width={1500} height={1500} className='h-full w-full object-cover' alt='no-image' />
       <Dialog open>
-        <DialogContent className='max-w-[450px] rounded-lg [&>button]:hidden'>
+        <DialogContent className='rounded-lg sm:max-w-[450px] [&>button]:hidden'>
           <DialogHeader>
             <DialogTitle>
               <div>
@@ -75,61 +105,69 @@ const AuthPage = () => {
             </DialogTitle>
             <DialogDescription>Chào mừng bạn đến với hệ thống quản lý đào tạo</DialogDescription>
           </DialogHeader>
-          <Form {...formMicrosoftEmail}>
-            <form
-              onSubmit={formMicrosoftEmail.handleSubmit(() => {})}
-              className={`${!isOTPSended ? 'block' : 'hidden'} space-y-4`}
-            >
-              <CustomFormItem
-                type='input'
-                control={formMicrosoftEmail.control}
-                name='microsoft_email'
-                label='Email microsoft'
-                placeholder='Nhập email microsoft'
-                setting={{ input: { type: 'email' } }}
-                description='Email microsoft được hệ thống sử dụng để xác thực'
+
+          <div className={`${isOTPSended ? 'hidden' : 'block'}`}>
+            <div>
+              <Label>Email mircosoft</Label>
+              <Input
+                className='mt-2'
+                type='email'
+                placeholder='VD: CT060111@actvn.edu.vn'
+                value={inputEmail}
+                onChange={(e) => setInputEmail(e.target.value)}
               />
-              <Button className='w-full' type='submit' onClick={() => setIsOTPSended(!isOTPSended)}>
+              <p className='mt-2 text-sm text-gray-500'>Email microsoft được hệ thống sử dụng để xác thực</p>
+              <Button
+                className='mt-4 w-full'
+                onClick={() => mutateSendOTP.trigger()}
+                disabled={!inputEmail.includes('edu.vn')}
+                isLoading={mutateSendOTP.isMutating}
+              >
                 Gửi mã OTP
               </Button>
-            </form>
-          </Form>
+            </div>
+          </div>
+          <div className={`${isOTPSended ? 'block' : 'hidden'} ${isOTPVerified ? 'hidden' : 'block'}`}>
+            <Label>Mã OTP</Label>
+            <div className='mb-2' />
+            <InputOTP maxLength={6} value={inputOTP} onChange={(e) => setInputOTP(e)} pattern={REGEXP_ONLY_DIGITS}>
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+            <p className='mt-2 text-sm text-gray-500'>
+              Mã OTP được gửi đến email <b>{inputEmail}</b>
+            </p>
+            <Button
+              className='mt-4 w-full'
+              onClick={() => mutateVerifyOTP.trigger()}
+              disabled={inputOTP.length !== 6}
+              isLoading={mutateVerifyOTP.isMutating}
+            >
+              Xác thực
+            </Button>
+          </div>
+
+          {/* Form email cá nhân */}
           <Form {...formPersonalEmail}>
             <form
               onSubmit={formPersonalEmail.handleSubmit(handleSubmit)}
-              className={`${isOTPSended ? 'block' : 'hidden'} space-y-4`}
+              className={`${isOTPVerified && isOTPSended ? 'block' : 'hidden'} space-y-4`}
             >
-              <FormField
-                control={formPersonalEmail.control}
-                name='otp'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mã OTP</FormLabel>
-                    <FormControl>
-                      <InputOTP maxLength={6} {...field}>
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </FormControl>
-                    <FormDescription>
-                      Mã OTP được gửi đến email <b>{formMicrosoftEmail.getValues('microsoft_email')}</b>
-                    </FormDescription>
-                    <FormMessage className='!mt-0' />
-                  </FormItem>
-                )}
-              />
               <CustomFormItem
                 type='input'
                 control={formPersonalEmail.control}
                 name='email'
                 label='Email'
-                placeholder='Nhập email'
+                placeholder='VD: abc@gmail.com'
                 setting={{ input: { type: 'email' } }}
               />
               <CustomFormItem
@@ -137,13 +175,21 @@ const AuthPage = () => {
                 control={formPersonalEmail.control}
                 name='password'
                 label='Mật khẩu'
-                placeholder='Nhập mật khẩu'
+                placeholder='VD: abc123'
                 setting={{ input: { type: 'password' } }}
               />
-              <Button variant={'outline'} className='w-full' onClick={() => setIsOTPSended(!isOTPSended)}>
+              <Button
+                variant={'outline'}
+                className='w-full'
+                onClick={() => {
+                  setIsOTPSended(false)
+                  setIsOTPVerified(false)
+                }}
+                type='button'
+              >
                 Gửi lại mã OTP
               </Button>
-              <Button type='submit' className={`w-full ${!isOTPSended ? 'hidden' : 'block'}`}>
+              <Button type='submit' className='w-full'>
                 Đăng ký
               </Button>
             </form>

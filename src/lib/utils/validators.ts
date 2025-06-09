@@ -1,56 +1,30 @@
 import { z } from 'zod'
 
-export const validateString = z
-  .string({
-    message: 'Vui lòng nhập thông tin'
-  })
-  .trim()
-  .nonempty({
-    message: 'Vui lòng nhập thông tin'
-  })
-
 export const validateEmail = z
   .string()
   .trim()
   .nonempty({
-    message: 'Vui lòng nhập email'
+    message: 'Email không được để trống'
   })
   .email({
-    message: 'Email không hợp lệ'
+    message: 'Email không hợp lệ (VD: example@gmail.com)'
   })
+
 export const validatePassword = z.string().trim().nonempty({
-  message: 'Vui lòng nhập mật khẩu'
+  message: 'Mật khẩu không được để trống'
 })
-
-//fix number
-export const validateTrainingPeriod = z
-  .number({
-    message: 'Vui lòng nhập số'
-  })
-  .min(1, {
-    message: 'Vui lòng nhập thời gian đào tạo'
-  })
-  .max(5, {
-    message: 'Thời gian đào tạo không được vượt quá 5 năm'
-  })
-
-export const validateAcademyEmail = z
+// .min(8, {
+//   message: 'Mật khẩu phải có ít nhất 8 ký tự'
+// })
+export const validateAcademicEmail = z
   .string()
   .trim()
   .nonempty({
-    message: 'Vui lòng nhập email'
+    message: 'Email không được để trống'
   })
   .email({
-    message: 'Email không hợp lệ'
+    message: 'Email không hợp lệ (VD: example@gmail.com)'
   })
-  .includes('@actvn.edu.vn', {
-    message: 'Email không hợp lệ (Ví dụ: abc@actvn.edu.vn)'
-  })
-
-export const validateCredit = z
-  .number({
-    message: 'Vui lòng nhập số'
-  })
-  .min(1, {
-    message: 'Vui lòng nhập số tín chỉ'
+  .includes('edu.vn', {
+    message: 'Email học viện không hợp lệ (VD: example@actvn.edu.vn)'
   })

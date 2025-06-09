@@ -1,10 +1,10 @@
 'use server'
 
 import { SignJWT, jwtVerify } from 'jose'
-import { SessionPayload } from '@/types/auth'
+import { SessionPayload } from '@/types/common'
 import { cookies } from 'next/headers'
 
-const sessionKey = process.env.SESSION_KEY
+const sessionKey = process.env.SESSION_SECRET
 const encodedKey = new TextEncoder().encode(sessionKey)
 
 export async function encrypt(payload: any) {
