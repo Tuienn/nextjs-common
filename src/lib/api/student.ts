@@ -35,3 +35,17 @@ export const importExcel = async (data: any) => {
   const res = await apiService('POST', 'users/import-excel', data)
   return res
 }
+
+export const searchStudentByCode = async (studentCode: string) => {
+  const res = await apiService('GET', queryString(['users', 'search'], { student_code: studentCode }))
+
+  return [
+    {
+      label: undefined,
+      options: res.data.map((item: any) => ({
+        label: item.full_name + ' - ' + item.student_code,
+        value: item.student_code
+      }))
+    }
+  ]
+}

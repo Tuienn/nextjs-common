@@ -3,15 +3,13 @@ import { DownloadIcon, EyeIcon, PencilIcon } from 'lucide-react'
 
 interface Props {
   id: string
+  handleSetIdDetail: (id: string) => void
 }
 
 const CertificateActionButton: React.FC<Props> = (props) => {
   return (
     <div className='flex items-center gap-2'>
-      <Button variant={'outline'} size={'icon'}>
-        <PencilIcon />
-      </Button>
-      <Button size={'icon'}>
+      <Button size={'icon'} onClick={() => props.handleSetIdDetail(props.id)}>
         <EyeIcon />
       </Button>
 

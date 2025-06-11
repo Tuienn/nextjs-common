@@ -28,3 +28,12 @@ export const validateAcademicEmail = z
   .includes('edu.vn', {
     message: 'Email học viện không hợp lệ (VD: example@actvn.edu.vn)'
   })
+
+export const validateNoEmpty = (name: string) => {
+  return z
+    .string()
+    .trim()
+    .nonempty({
+      message: `${name} không được để trống`
+    })
+}

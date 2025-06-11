@@ -13,7 +13,8 @@ const apiService = async (
   url: string,
   data?: Record<string, string | number | null | undefined> | FormData,
   isAuth: boolean = true,
-  headers?: HeadersInit
+  headers?: HeadersInit,
+  isBlob?: boolean
 ) => {
   const fullUrl = `${BASE_URL}/api/v1/${url}`
 
@@ -75,6 +76,8 @@ const apiService = async (
 
     if (contentType && contentType.includes('application/json')) {
       return await response.json()
+    } else if (isBlob) {
+      return await response.blob()
     } else {
       const text = await response.text()
       console.warn('Response is not JSON:', text)

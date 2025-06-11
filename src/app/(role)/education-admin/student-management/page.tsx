@@ -9,7 +9,7 @@ import TableList from '@/components/role/admin/table-list'
 import UploadButton from '@/components/role/admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { STUDENT_STATUS_OPTIONS } from '@/constants/common'
+import { PAGE_SIZE, STUDENT_STATUS_OPTIONS } from '@/constants/common'
 import { toast } from '@/hooks/use-toast'
 import {
   createStudent,
@@ -33,8 +33,6 @@ const StudentManagementPage = () => {
   const [idDetail, setIdDetail] = useState<string | null | undefined>(undefined)
 
   const [filter, setFilter] = useState<any>({})
-  console.log('🚀 ~ StudentManagementPage ~ filter:', filter)
-
   const handleCloseDetailDialog = useCallback(() => {
     setIdDetail(undefined)
   }, [])
@@ -46,7 +44,13 @@ const StudentManagementPage = () => {
     [filter]
   )
 
-  const queryStudents = useSWR(filter, () => searchStudent(formatStudent(filter, true)))
+  const queryStudents = useSWR('students' + JSON.stringify(filter), () =>
+    searchStudent({
+      ...formatStudent(filter, true),
+      page: filter.page || 1,
+      page_size: PAGE_SIZE
+    })
+  )
 
   const queryStudentDetail = useSWR(idDetail, () => getStudentById(idDetail as string), {
     onError: (error) => {
@@ -92,14 +96,12 @@ const StudentManagementPage = () => {
   })
 
   const mutateImportExcel = useSWRMutation('import-excel', (_key, { arg }: { arg: any }) => importExcel(arg), {
-    onSuccess: (data) => {
-      console.log('🚀 ~ mutateImportExcel ~ data:', data)
-
-      toast(toastNoti('success', 'Tải file lên thành công'))
+    onSuccess: () => {
+      toast(toastNoti('success', 'Tải tệp lên thành công'))
       queryStudents.mutate()
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi tải file lên'))
+      toast(toastNoti('error', error.message || 'Lỗi khi tải tệp lên'))
     }
   })
   const handleDelete = useCallback((id: string) => {
@@ -136,6 +138,7 @@ const StudentManagementPage = () => {
           </Button>
         </div>
       </div>
+
       <Filter
         handleSetFilter={setFilter}
         children={[
@@ -200,7 +203,9 @@ const StudentManagementPage = () => {
             value: 'status',
             className: 'min-w-[150px]',
             render: (item) => (
-              <Badge variant={item.status === 'Đã tốt nghiệp' ? 'default' : 'secondary'}>{item.status}</Badge>
+              <Badge variant={item.status === 'true' ? 'default' : 'secondary'}>
+                {item.status === 'true' ? 'Đã tốt nghiệp' : 'Đang học'}
+              </Badge>
             )
           },
           {
@@ -284,11 +289,21 @@ const StudentManagementPage = () => {
             defaultValue: new Date().getFullYear()
           },
           {
-            type: 'input',
+            type: 'select',
             label: 'Trạng thái',
             name: 'status',
             disabled: true,
-            placeholder: 'Không thể chỉnh sửa - Tự động tạo'
+            setting: {
+              select: {
+                groups: [
+                  {
+                    label: 'Trạng thái',
+                    options: STUDENT_STATUS_OPTIONS
+                  }
+                ]
+              }
+            },
+            placeholder: 'Không thể chỉnh sửa - Mặc định "Đang học"'
           }
         ]}
         data={queryStudentDetail.data || {}}

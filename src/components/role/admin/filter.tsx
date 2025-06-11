@@ -41,7 +41,6 @@ const Filter: React.FC<Props> = (props) => {
   })
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log('🚀 ~ onSubmit ~ data:', data)
     props.handleSetFilter(data)
   }
   const handleReset = () => {

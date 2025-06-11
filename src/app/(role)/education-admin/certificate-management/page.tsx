@@ -1,98 +1,82 @@
 'use client'
 
+import CertificateView from '@/components/common/certificate-view'
 import CommonPagination from '@/components/common/pagination'
+import { UseData } from '@/components/providers/data-provider'
 import CertificateActionButton from '@/components/role/admin/certificate-action-button'
+import DetailDialog from '@/components/role/admin/detail-dialog'
 import Filter from '@/components/role/admin/filter'
 import TableList from '@/components/role/admin/table-list'
 import UploadButton from '@/components/role/admin/upload-button'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
+import { CERTIFICATE_TYPE_OPTIONS } from '@/constants/common'
+import { toast } from '@/hooks/use-toast'
+import { createCertificate, getCertificateList, uploadCertificate } from '@/lib/api/certificate'
+import { searchStudentByCode } from '@/lib/api/student'
+import { toastNoti } from '@/lib/utils/common'
+import { formatFacultyOptions } from '@/lib/utils/format-api'
+import { validateNoEmpty } from '@/lib/utils/validators'
+import { DialogTitle } from '@radix-ui/react-dialog'
 import { PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 
 import { useCallback } from 'react'
 import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
 
 const CertificateManagementPage = () => {
   const [idDetail, setIdDetail] = useState<string | null | undefined>(undefined)
-
   const [filter, setFilter] = useState<any>({})
   const handleCloseDetailDialog = useCallback(() => {
     setIdDetail(undefined)
   }, [])
 
-  const handleDelete = (id: string) => {
-    console.log(id)
-  }
+  const queryCertificates = useSWR('certificates' + JSON.stringify(filter), () => getCertificateList(filter))
 
-  const data = [
-    {
-      code: 'CT060111',
-      name: 'Nguyễn Văn A',
-      typeCertificate: 'Giỏi',
-      date: '2021-01-01'
+  const mutateCreateStudent = useSWRMutation('create-certificate', (_, { arg }: any) => createCertificate(arg), {
+    onSuccess: () => {
+      toast(toastNoti('success', 'Cấp chứng chỉ thành công'))
+      queryCertificates.mutate()
+      handleCloseDetailDialog()
     },
-    {
-      code: 'CT060112',
-      name: 'Trần Thị B',
-      typeCertificate: 'Xuất sắc',
-      date: '2021-02-15'
-    },
-    {
-      code: 'CT060113',
-      name: 'Lê Văn C',
-      typeCertificate: 'Khá',
-      date: '2021-03-20'
-    },
-    {
-      code: 'CT060114',
-      name: 'Phạm Thị D',
-      typeCertificate: 'Giỏi',
-      date: '2021-04-10'
-    },
-    {
-      code: 'CT060115',
-      name: 'Hoàng Văn E',
-      typeCertificate: 'Trung bình',
-      date: '2021-05-05'
-    },
-    {
-      code: 'CT060116',
-      name: 'Ngô Thị F',
-      typeCertificate: 'Xuất sắc',
-      date: '2021-06-25'
-    },
-    {
-      code: 'CT060117',
-      name: 'Đỗ Văn G',
-      typeCertificate: 'Khá',
-      date: '2021-07-15'
-    },
-    {
-      code: 'CT060118',
-      name: 'Vũ Thị H',
-      typeCertificate: 'Giỏi',
-      date: '2021-08-30'
-    },
-    {
-      code: 'CT060119',
-      name: 'Bùi Văn I',
-      typeCertificate: 'Trung bình',
-      date: '2021-09-20'
-    },
-    {
-      code: 'CT060120',
-      name: 'Dương Thị K',
-      typeCertificate: 'Xuất sắc',
-      date: '2021-10-10'
+    onError: (error) => {
+      toast(toastNoti('error', error.message || 'Cấp chứng chỉ thất bại'))
     }
-  ]
+  })
+
+  const mutateUploadCertificate = useSWRMutation(
+    'upload-certificate',
+    (_, { arg }: { arg: FormData }) => uploadCertificate(arg),
+    {
+      onSuccess: () => {
+        toast(toastNoti('success', 'Tải tệp lên thành công'))
+        queryCertificates.mutate()
+      },
+      onError: (error) => {
+        toast(toastNoti('error', error.message || 'Lỗi khi tải tệp lên'))
+      }
+    }
+  )
+
+  const handleUpload = useCallback(
+    (file: FormData) => {
+      mutateUploadCertificate.trigger(file)
+    },
+    [mutateUploadCertificate]
+  )
+
+  const handleCreateCertificate = useCallback((data: any) => {
+    mutateCreateStudent.trigger(data)
+  }, [])
 
   return (
     <>
       <div className='mb-4 flex items-center justify-between'>
         <h2>Quản lý chứng chỉ</h2>
         <div className='flex items-center gap-2'>
-          <UploadButton />
+          <UploadButton handleUpload={handleUpload} loading={mutateUploadCertificate.isMutating} />
           <Button onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Cấp chứng chỉ</span>
@@ -101,23 +85,41 @@ const CertificateManagementPage = () => {
       </div>
       <Filter
         children={[
-          { type: 'input', placeholder: 'Nhập mã sinh viên', name: 'code' },
+          {
+            type: 'query_select',
+            placeholder: 'Nhập và chọn mã sinh viên',
+            name: 'code',
+            setting: {
+              querySelect: {
+                queryFn: (keyword: string) => searchStudentByCode(keyword)
+              }
+            }
+          },
+          {
+            type: 'select',
+            name: 'faculty',
+            placeholder: 'Chọn chuyên ngành',
+            setting: {
+              select: {
+                groups: [
+                  {
+                    label: 'Hệ đào tạo',
+                    options: formatFacultyOptions(UseData().facultyList)
+                  }
+                ]
+              }
+            }
+          },
           {
             type: 'select',
             placeholder: 'Chọn loại bằng',
-            name: 'typeCertificate',
+            name: 'certificateType',
             setting: {
               select: {
                 groups: [
                   {
                     label: undefined,
-                    options: [
-                      { value: '1', label: 'Xuất sắc' },
-                      { value: '2', label: 'Giỏi' },
-                      { value: '3', label: 'Khá' },
-                      { value: '4', label: 'Trung bình' },
-                      { value: '5', label: 'Yếu' }
-                    ]
+                    options: CERTIFICATE_TYPE_OPTIONS
                   }
                 ]
               }
@@ -125,39 +127,138 @@ const CertificateManagementPage = () => {
           },
           {
             type: 'input',
-            placeholder: 'Từ ngày',
-            name: 'fromDate',
+            name: 'year',
+            placeholder: 'Nhập năm học',
             setting: {
               input: {
-                type: 'date'
+                type: 'number'
               }
             }
           },
           {
-            type: 'input',
-            placeholder: 'Đến ngày',
-            name: 'toDate',
-            setting: { input: { type: 'date' } }
+            type: 'select',
+            name: 'status',
+            placeholder: 'Chọn trạng thái kí',
+            setting: {
+              select: {
+                groups: [
+                  {
+                    label: undefined,
+                    options: [
+                      { value: 'true', label: 'Đã kí' },
+                      { value: 'false', label: 'Chưa kí' }
+                    ]
+                  }
+                ]
+              }
+            }
           }
         ]}
         handleSetFilter={setFilter}
       />
       <TableList
         children={[
-          { header: 'Mã SV', value: 'code', className: 'min-w-[80px] font-semibold text-blue-500' },
-          { header: 'Họ và tên', value: 'name', className: 'min-w-[200px]' },
-          { header: 'Loại bằng', value: 'typeCertificate', className: 'min-w-[100px]' },
+          { header: 'Mã SV', value: 'studentCode', className: 'min-w-[80px] font-semibold text-blue-500' },
+          { header: 'Họ và tên', value: 'studentName', className: 'min-w-[200px]' },
+          { header: 'Chuyên ngành', value: 'facultyName', className: 'min-w-[150px]' },
+          { header: 'Loại bằng', value: 'certificateType', className: 'min-w-[100px]' },
           { header: 'Ngày cấp', value: 'date', className: 'min-w-[100px]' },
+          {
+            header: 'Trạng thái kí',
+            value: 'signed',
+            className: 'min-w-[100px]',
+            render: (item) => (
+              <Badge variant={item.signed ? 'default' : 'outline'}>{item.signed ? 'Đã kí' : 'Chưa kí'}</Badge>
+            )
+          },
           {
             header: 'Hành động',
             value: 'action',
 
-            render: (item) => <CertificateActionButton id={item.id} />
+            render: (item) => <CertificateActionButton handleSetIdDetail={setIdDetail} id={item.id} />
           }
         ]}
-        data={data}
+        data={queryCertificates.data?.data || []}
       />
-      <CommonPagination />
+      <CommonPagination
+        page={queryCertificates.data?.page || 1}
+        total_page={queryCertificates.data?.total_page || 1}
+        handleChangePage={(page) => {
+          setFilter({ ...filter, page })
+        }}
+      />
+      <DetailDialog
+        children={[
+          {
+            type: 'query_select',
+            placeholder: 'Nhập và chọn mã sinh viên',
+            name: 'studentCode',
+            setting: {
+              querySelect: {
+                queryFn: (keyword: string) => searchStudentByCode(keyword)
+              }
+            },
+            label: 'Mã sinh viên',
+            validator: validateNoEmpty('Mã sinh viên')
+          },
+          {
+            type: 'select',
+            placeholder: 'Chọn loại bằng',
+            name: 'certificateType',
+            setting: {
+              select: {
+                groups: [
+                  {
+                    label: undefined,
+                    options: CERTIFICATE_TYPE_OPTIONS
+                  }
+                ]
+              }
+            },
+            label: 'Loại bằng',
+            validator: validateNoEmpty('Loại bằng')
+          },
+          {
+            type: 'input',
+            placeholder: 'Nhập tên bằng',
+            name: 'name',
+            label: 'Tên bằng',
+            validator: validateNoEmpty('Tên bằng')
+          },
+          {
+            type: 'input',
+            name: 'serialNumber',
+            placeholder: 'Nhập số seri',
+            label: 'Số seri',
+            validator: validateNoEmpty('Số seri')
+          },
+          {
+            type: 'input',
+            name: 'regNo',
+            placeholder: 'Nhập số đăng ký',
+            label: 'Số đăng ký',
+            validator: validateNoEmpty('Số đăng ký')
+          }
+        ]}
+        data={[]}
+        mode={idDetail === null ? 'create' : undefined}
+        handleSubmit={handleCreateCertificate}
+        handleClose={handleCloseDetailDialog}
+      />
+      <CertificateView
+        universityName='Trường đại học Bách Khoa Hà Nội'
+        universityCode='BKHN'
+        facultyName='Khoa học máy tính'
+        facultyCode='KHMT'
+        studentCode='1234567890'
+        studentName='Nguyễn Văn A'
+        name='Bằng đại học'
+        date='2021-01-01'
+        certificateType='Bằng đại học'
+        signed={true}
+        serialNumber='1234567890'
+        regNo='1234567890'
+      />
     </>
   )
 }

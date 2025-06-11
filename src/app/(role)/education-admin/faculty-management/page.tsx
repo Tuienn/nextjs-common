@@ -1,7 +1,6 @@
 'use client'
 import { UseData, UseRefetchFacultyList } from '@/components/providers/data-provider'
 import DetailDialog from '@/components/role/admin/detail-dialog'
-
 import TableActionButton from '@/components/role/admin/table-action-button'
 import TableList from '@/components/role/admin/table-list'
 import { Button } from '@/components/ui/button'

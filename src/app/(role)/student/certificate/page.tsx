@@ -143,7 +143,7 @@ const StudentCertificatePage = () => {
         ]}
         data={data}
       />
-      <CommonPagination />
+      {/* <CommonPagination /> */}
     </>
   )
 }

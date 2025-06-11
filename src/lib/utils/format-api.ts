@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 export const formatStudent = (data: any, isSendToServer: boolean = false) => {
   return isSendToServer
     ? {
@@ -15,7 +17,7 @@ export const formatStudent = (data: any, isSendToServer: boolean = false) => {
         faculty: data.faculty_code,
         facultyName: data.faculty_name,
         year: data.course,
-        status: data.status
+        status: String(data.status)
       }
 }
 
@@ -37,4 +39,43 @@ export const formatFacultyOptions = (data: any) => {
     label: item.name,
     value: item.code
   }))
+}
+
+export const formatCertificate = (data: any, isSendToServer: boolean = false) => {
+  return isSendToServer
+    ? {
+        student_code: data.studentCode,
+        name: data.name,
+        certificate_type: data.certificateType,
+        serial_number: data.serialNumber,
+        reg_no: data.regNo
+      }
+    : {
+        id: data.id,
+        studentCode: data.student_code,
+        studentName: data.student_name,
+        faculty: data.faculty_code,
+        facultyName: data.faculty_name,
+        certificateType: data.certificate_type,
+        date: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
+        signed: data.signed,
+        name: data.name
+      }
+}
+
+export const formatCertificateView = (data: any) => {
+  return {
+    studentCode: data.student_code,
+    studentName: data.student_name,
+    facultyCode: data.faculty_code,
+    facultyName: data.faculty_name,
+    certificateType: data.certificate_type,
+    date: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
+    signed: data.signed,
+    name: data.name,
+    universityName: data.university_name,
+    universityCode: data.university_code,
+    serialNumber: data.serial_number,
+    regNo: data.reg_no
+  }
 }

@@ -21,7 +21,6 @@ const QuerySelect: React.FC<CustomFormItem> = (props) => {
       return !searchText
     }
   })
-
   return (
     <FormField
       control={props.control}
@@ -42,13 +41,13 @@ const QuerySelect: React.FC<CustomFormItem> = (props) => {
                   disabled={props.disabled}
                 >
                   {field.value
-                    ? (data ?? []).find((item: any) => item.value === field.value)?.label
+                    ? (data ?? []).find((item: any) => item.value === field.value)?.label || field.value
                     : props.placeholder || 'Tìm kiếm và chọn'}
                   {isLoading ? <Loader2 className='animate-spin' /> : <ChevronsUpDown className='opacity-50' />}
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className='w-[250px] p-0'>
+            <PopoverContent className='min-w-[250px] p-0'>
               <Command>
                 <CommandInput
                   placeholder={'Nhập để tìm kiếm'}

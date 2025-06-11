@@ -6,7 +6,7 @@ import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogT
 import { Form } from '@/components/ui/form'
 import { type CustomZodFormItem } from '@/types/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -19,6 +19,9 @@ interface Props {
 }
 
 const DetailDialog: React.FC<Props> = (props) => {
+  const [localMode, setLocalMode] = useState<'create' | 'update' | undefined>(props.mode)
+  const [localData, setLocalData] = useState(props.data)
+
   const formSchema = z.object(
     props.children.reduce(
       (acc, obj) => {
@@ -41,27 +44,39 @@ const DetailDialog: React.FC<Props> = (props) => {
   })
 
   useEffect(() => {
-    if (props.mode === 'update' && props.data) {
-      for (const key in props.data) {
-        form.setValue(key, props.data[key])
-      }
-    } else if (props.mode === undefined) {
-      form.reset()
+    if (props.mode !== undefined) {
+      setLocalMode(props.mode)
+      setLocalData(props.data)
     }
   }, [props.mode, props.data])
 
+  useEffect(() => {
+    if (localMode === 'update' && localData) {
+      for (const key in localData) {
+        form.setValue(key, localData[key])
+      }
+    } else if (localMode === 'create') {
+      form.reset()
+    }
+  }, [localMode, localData])
+
+  const handleOpenChange = (open: boolean) => {
+    if (open === false) {
+      props.handleClose()
+
+      setTimeout(() => {
+        setLocalMode(undefined)
+        setLocalData(null)
+        form.reset()
+      }, 150)
+    }
+  }
+
   return (
-    <Dialog
-      open={props.mode !== undefined}
-      onOpenChange={(open) => {
-        if (open === false) {
-          props.handleClose()
-        }
-      }}
-    >
+    <Dialog open={props.mode !== undefined} onOpenChange={handleOpenChange}>
       <DialogContent className='max-h-[80vh] overflow-y-scroll sm:max-w-[500px]'>
         <DialogHeader>
-          <DialogTitle>{props.mode === 'create' ? 'Tạo mới dữ liệu' : 'Cập nhật dữ liệu'}</DialogTitle>
+          <DialogTitle>{localMode === 'create' ? 'Tạo mới dữ liệu' : 'Cập nhật dữ liệu'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(props.handleSubmit)} className='space-y-4'>
@@ -74,7 +89,7 @@ const DetailDialog: React.FC<Props> = (props) => {
                   Hủy
                 </Button>
               </DialogClose>
-              <Button type='submit'>{props.mode === 'create' ? 'Tạo mới' : 'Cập nhật'}</Button>
+              <Button type='submit'>{localMode === 'create' ? 'Tạo mới' : 'Cập nhật'}</Button>
             </DialogFooter>
           </form>
         </Form>
