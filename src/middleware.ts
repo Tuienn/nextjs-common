@@ -7,7 +7,7 @@ const protectedRoutes = ['/education-admin', '/student', '/admin']
 const adminRoutes = ['/admin']
 const educationAdminRoutes = ['/education-admin']
 const studentRoutes = ['/student']
-const authRoutes = ['/auth/sign-in', '/auth/sign-up']
+const authRoutes = ['/auth/sign-in', '/auth/sign-up', '/auth/education-sign-up']
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public

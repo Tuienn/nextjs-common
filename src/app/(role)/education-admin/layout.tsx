@@ -5,15 +5,15 @@ interface Props {
   children: React.ReactNode
 }
 
-const AdminLayout: React.FC<Props> = ({ children }) => {
+const EducationAdminLayout: React.FC<Props> = ({ children }) => {
   return (
     <DataProvider>
       <main>
-        <Header role='admin' />
+        <Header role='university_admin' />
         <div className='container mt-16 py-6'>{children}</div>
       </main>
     </DataProvider>
   )
 }
 
-export default AdminLayout
+export default EducationAdminLayout

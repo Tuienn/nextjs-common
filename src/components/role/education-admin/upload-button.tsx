@@ -6,6 +6,8 @@ import { UploadIcon } from 'lucide-react'
 interface Props {
   handleUpload: (file: FormData) => void
   loading: boolean | false
+  title?: string
+  icon?: React.ReactNode
 }
 
 const UploadButton: React.FC<Props> = (props) => {
@@ -53,8 +55,8 @@ const UploadButton: React.FC<Props> = (props) => {
         isLoading={props.loading}
         title='Có hỗ trợ tải nhiều file cùng lúc'
       >
-        <UploadIcon />
-        <span className='hidden sm:block'>Tải tệp lên</span>
+        {props.icon || <UploadIcon />}
+        <span className='hidden sm:block'>{props.title || 'Tải tệp lên'}</span>
       </Button>
     </>
   )

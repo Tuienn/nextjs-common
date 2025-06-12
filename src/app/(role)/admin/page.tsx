@@ -1,5 +1,7 @@
+import { redirect } from 'next/navigation'
+
 const AdminPage = () => {
-  return <div>AdminPage</div>
+  redirect('/admin/education-management')
 }
 
 export default AdminPage

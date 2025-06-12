@@ -19,7 +19,7 @@ const formSchma = z.object({
   password: validatePassword
 })
 
-const AuthPage = () => {
+const SignInPage = () => {
   const { toast } = useToast()
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchma>>({
@@ -84,11 +84,23 @@ const AuthPage = () => {
               </Button>
             </form>
           </Form>
-          <div className='text-center text-sm'>
-            Chưa có tài khoản?{' '}
-            <Link className='underline underline-offset-4' href='/auth/sign-up'>
-              Đăng ký
-            </Link>
+
+          <div className='relative'>
+            <hr className='my-4' />
+            <span className='absolute left-1/2 top-1 -translate-x-1/2 text-sm text-gray-500'>
+              <div className='bg-white px-2 text-sm dark:bg-background'>hoặc</div>
+            </span>
+          </div>
+          <p className='text-center text-sm'>
+            Bạn chưa có tài khoản? <span className='underline'>Đăng ký với vai trò</span>
+          </p>
+          <div className='flex flex-col gap-2 md:flex-row'>
+            <Button className='flex-1' variant={'outline'}>
+              <Link href='/auth/sign-up'>Sinh viên</Link>
+            </Button>
+            <Button className='flex-1' variant={'outline'}>
+              <Link href='/auth/education-sign-up'>Quản lý đào tạo</Link>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -96,4 +108,4 @@ const AuthPage = () => {
   )
 }
 
-export default AuthPage
+export default SignInPage

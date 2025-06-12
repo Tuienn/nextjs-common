@@ -1,123 +1,59 @@
+'use client'
+import CertificateBlankButton from '@/components/common/certificate-blank-button'
+import CertificateView from '@/components/common/certificate-view'
+import PageHeader from '@/components/common/page-header'
 import CommonPagination from '@/components/common/pagination'
-import TableList from '@/components/role/admin/table-list'
+import TableList from '@/components/role/education-admin/table-list'
+import CreateVerifyCodeDialog from '@/components/role/student/create-verify-code'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog'
+import { Dialog, DialogTitle, DialogContent, DialogTrigger, DialogHeader, DialogFooter } from '@/components/ui/dialog'
+import { PAGE_SIZE } from '@/constants/common'
+import { getCertificateDataStudent, getCertificateFile, getVerifyCodeList } from '@/lib/api/certificate'
+import { CertificateType } from '@/types/common'
 import { EyeIcon, PackagePlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import useSWR from 'swr'
 
 const StudentCertificatePage = () => {
-  const data = [
-    {
-      hash: '1234567890',
-      createdAt: '2021-01-01 08:30:15',
-      expiredAt: '0.5h',
-      permissionType: ['Điểm', 'Văn bằng'],
-      status: true
-    },
-    {
-      hash: '2345678901',
-      createdAt: '2021-02-15 14:22:45',
-      expiredAt: '1h',
-      permissionType: ['Điểm', 'Văn bằng'],
-      status: true
-    },
-    {
-      hash: '3456789012',
-      createdAt: '2021-03-20 09:15:30',
-      expiredAt: '5h',
-      permissionType: ['Văn bằng'],
-      status: false
-    },
-    {
-      hash: '4567890123',
-      createdAt: '2021-04-10 11:45:20',
-      expiredAt: '10h',
-      permissionType: ['Điểm'],
-      status: true
-    },
-    {
-      hash: '5678901234',
-      createdAt: '2021-05-05 16:10:55',
-      expiredAt: '24h',
-      permissionType: ['Điểm', 'Văn bằng'],
-      status: false
-    },
-    {
-      hash: '6789012345',
-      createdAt: '2021-06-15 13:25:40',
-      expiredAt: '0.5h',
-      permissionType: ['Văn bằng'],
-      status: true
-    },
-    {
-      hash: '7890123456',
-      createdAt: '2021-07-20 10:50:25',
-      expiredAt: '1h',
-      permissionType: ['Điểm'],
-      status: true
-    },
-    {
-      hash: '8901234567',
-      createdAt: '2021-08-01 15:35:10',
-      expiredAt: '5h',
-      permissionType: ['Điểm', 'Văn bằng'],
-      status: false
-    },
-    {
-      hash: '9012345678',
-      createdAt: '2021-09-10 12:05:35',
-      expiredAt: '10h',
-      permissionType: ['Văn bằng'],
-      status: true
-    },
-    {
-      hash: '0123456789',
-      createdAt: '2021-10-15 17:40:50',
-      expiredAt: '24h',
-      permissionType: ['Điểm', 'Văn bằng'],
-      status: true
-    }
-  ]
+  const [page, setPage] = useState(1)
+  const queryVerifyCodeList = useSWR('verifyCode-list' + page, () => getVerifyCodeList({ page, page_size: PAGE_SIZE }))
+  const [openCreateVerifyCode, setOpenCreateVerifyCode] = useState(false)
+  const queryCertificateDataStudent = useSWR('certificate-data-student', getCertificateDataStudent)
+
   return (
     <>
-      <div className='flex items-center justify-between'>
-        <h2>Thông tin chứng chỉ</h2>
-
-        <div className='flex items-center gap-2'>
-          <Button variant={'outline'}>
-            <EyeIcon /> <span className='hidden sm:block'>Xem chứng chỉ</span>
-          </Button>
+      <PageHeader
+        title='Thông tin chứng chỉ'
+        extra={[
           <Dialog>
             <DialogTrigger asChild>
-              <Button>
-                <PackagePlusIcon />
-                <span className='hidden sm:block'>Tạo mã xác minh</span>
+              <Button variant={'outline'}>
+                <EyeIcon /> <span className='hidden sm:block'>Xem chứng chỉ</span>
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Tạo mã xác minh</DialogTitle>
-                <DialogDescription>
-                  Mã xác minh là một mã được tạo ra để xem điểm và văn bằng của sinh viên
-                </DialogDescription>
+                <DialogTitle>Thông tin chứng chỉ</DialogTitle>
               </DialogHeader>
+              <CertificateView data={queryCertificateDataStudent.data as CertificateType} />
+              <DialogFooter>
+                <CertificateBlankButton isIcon={false} action={() => getCertificateFile('my-file')} />
+              </DialogFooter>
             </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+          </Dialog>,
+          <Button onClick={() => setOpenCreateVerifyCode(true)}>
+            <PackagePlusIcon />
+            <span className='hidden sm:block'>Tạo mã xác minh</span>
+          </Button>
+        ]}
+      />
 
       <TableList
         children={[
-          { header: 'Mã xác minh', value: 'hash', className: 'min-w-[120px] font-semibold text-blue-500' },
+          { header: 'Mã xác minh', value: 'verifyCode', className: 'min-w-[120px] font-semibold text-blue-500' },
           { header: 'Thời gian tạo', value: 'createdAt', className: 'min-w-[150px]' },
-          { header: 'Hết hạn sau khi tạo', value: 'expiredAt', className: 'min-w-[100px]' },
+          { header: 'Hết hạn sau (phút)', value: 'expiredAfter', className: 'min-w-[100px]' },
           {
             header: 'Quyền hạn',
             value: 'permissionType',
@@ -125,8 +61,12 @@ const StudentCertificatePage = () => {
             render: (item) => (
               <div className='flex flex-wrap gap-2'>
                 {item.permissionType.map((type: string, index: number) => (
-                  <Badge key={index} variant={type === 'Điểm' ? 'outline' : 'default'}>
-                    {type}
+                  <Badge variant={'outline'} key={index}>
+                    {type === 'can_view_score'
+                      ? 'Điểm'
+                      : type === 'can_view_data'
+                        ? 'Dữ liệu văn bằng'
+                        : 'Tệp văn bằng'}
                   </Badge>
                 ))}
               </div>
@@ -137,13 +77,19 @@ const StudentCertificatePage = () => {
             value: 'status',
             className: 'min-w-[100px]',
             render: (item) => (
-              <Badge variant={item.status ? 'default' : 'outline'}>{item.status ? 'Có hiệu lục' : 'Hết hạn'}</Badge>
+              <Badge variant={item.status ? 'default' : 'outline'}>{item.status ? 'Có hiệu lực' : 'Hết hạn'}</Badge>
             )
           }
         ]}
-        data={data}
+        data={queryVerifyCodeList.data?.data || []}
+        page={page}
       />
-      {/* <CommonPagination /> */}
+      <CommonPagination page={page} totalPage={queryVerifyCodeList.data?.total_page || 0} handleChangePage={setPage} />
+      <CreateVerifyCodeDialog
+        open={openCreateVerifyCode}
+        handleSetOpen={setOpenCreateVerifyCode}
+        swrKey={'verifyCode-list' + page}
+      />
     </>
   )
 }

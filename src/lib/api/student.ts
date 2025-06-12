@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { queryString } from '../utils/common'
 import { formatStudent } from '../utils/format-api'
 import apiService from './root'
@@ -48,4 +49,14 @@ export const searchStudentByCode = async (studentCode: string) => {
       }))
     }
   ]
+}
+
+export const getStudentInformation = async () => {
+  const res = await apiService('GET', 'users/me')
+  return {
+    ...formatStudent(res),
+    univeristyName: res.university_name,
+    universityCode: res.university_code,
+    facultyCode: res.faculty_code
+  }
 }

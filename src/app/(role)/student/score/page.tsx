@@ -1,4 +1,4 @@
-import TableList from '@/components/role/admin/table-list'
+import TableList from '@/components/role/education-admin/table-list'
 import ScoreView from '@/components/common/score-view'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'

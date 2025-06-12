@@ -71,11 +71,32 @@ export const formatCertificateView = (data: any) => {
     facultyName: data.faculty_name,
     certificateType: data.certificate_type,
     date: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
-    signed: data.signed,
     name: data.name,
     universityName: data.university_name,
     universityCode: data.university_code,
     serialNumber: data.serial_number,
-    regNo: data.reg_no
+    regNo: data.reg_no,
+    signed: data.signed
   }
+}
+
+export const formatCertificateVerifyCode = (data: any, isSendToServer: boolean = false) => {
+  return isSendToServer
+    ? {
+        duration_minutes: data.expiredAfter,
+        can_view_score: data.permissionType.includes('can_view_score'),
+        can_view_data: data.permissionType.includes('can_view_data'),
+        can_view_file: data.permissionType.includes('can_view_file')
+      }
+    : {
+        verifyCode: data.code,
+        createdAt: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
+        expiredAfter: data.expired_in_minutes,
+        permissionType: [
+          data.can_view_score ? 'can_view_score' : null,
+          data.can_view_data ? 'can_view_data' : null,
+          data.can_view_file ? 'can_view_file' : null
+        ].filter(Boolean) as ('can_view_score' | 'can_view_data' | 'can_view_file')[],
+        status: data.expired_in_minutes !== 0
+      }
 }

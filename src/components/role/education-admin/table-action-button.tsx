@@ -40,7 +40,7 @@ const TableActionButton: React.FC<Props> = (props) => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
             <AlertDialogAction onClick={() => props.handleDelete(props.id)}>Xóa</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

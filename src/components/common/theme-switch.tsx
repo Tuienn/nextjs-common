@@ -15,14 +15,14 @@ const ThemeSwitch = () => {
 
   if (!mounted) {
     return (
-      <Button variant='secondary' size='icon'>
+      <Button variant='ghost' size='icon'>
         <div className='h-4 w-4' />
       </Button>
     )
   }
 
   return (
-    <Button variant='secondary' size='icon' onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+    <Button variant='ghost' size='icon' onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
       {theme === 'light' ? <SunIcon className='h-4 w-4' /> : <MoonIcon className='h-4 w-4' />}
     </Button>
   )

@@ -1,18 +1,19 @@
 'use client'
-
 import { type CustomFormItem } from '@/types/common'
 import { Input } from '../ui/input'
 import { FormDescription, FormMessage, FormControl, FormField, FormLabel, FormItem } from '../ui/form'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import QuerySelect from './query-select'
-import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown, Eye, EyeOff } from 'lucide-react'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
-import { Calendar } from '../ui/calendar'
+import { useState } from 'react'
 
 const CustomFormItem: React.FC<CustomFormItem> = (props) => {
+  const [showPassword, setShowPassword] = useState(false)
+
   switch (props.type) {
     case 'input':
       return (
@@ -23,20 +24,37 @@ const CustomFormItem: React.FC<CustomFormItem> = (props) => {
             <FormItem>
               <FormLabel>{props.label}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={props.placeholder}
-                  {...field}
-                  disabled={props.disabled}
-                  type={props.setting?.input?.type || 'text'}
-                  onChange={(e) => {
-                    if (props.setting?.input?.type === 'number') {
-                      const value = e.target.value === '' ? '' : Number(e.target.value)
-                      field.onChange(value)
-                    } else {
-                      field.onChange(e.target.value)
+                <div className='relative'>
+                  <Input
+                    placeholder={props.placeholder}
+                    {...field}
+                    disabled={props.disabled}
+                    type={
+                      props.setting?.input?.type === 'password'
+                        ? showPassword
+                          ? 'text'
+                          : 'password'
+                        : props.setting?.input?.type || 'text'
                     }
-                  }}
-                />
+                    onChange={(e) => {
+                      if (props.setting?.input?.type === 'number') {
+                        const value = e.target.value === '' ? '' : Number(e.target.value)
+                        field.onChange(value)
+                      } else {
+                        field.onChange(e.target.value)
+                      }
+                    }}
+                    className={props.setting?.input?.type === 'password' ? 'pr-10' : ''}
+                  />
+                  {props.setting?.input?.type === 'password' && (
+                    <span
+                      className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700'
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                    </span>
+                  )}
+                </div>
               </FormControl>
               {props.description && <FormDescription>{props.description}</FormDescription>}
               <FormMessage className={`${props.description ? '!mt-0' : '!mt-2'}`} />

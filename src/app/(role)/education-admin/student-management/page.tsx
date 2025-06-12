@@ -1,12 +1,13 @@
 'use client'
 
+import PageHeader from '@/components/common/page-header'
 import CommonPagination from '@/components/common/pagination'
 import { UseData } from '@/components/providers/data-provider'
-import DetailDialog from '@/components/role/admin/detail-dialog'
-import Filter from '@/components/role/admin/filter'
-import TableActionButton from '@/components/role/admin/table-action-button'
-import TableList from '@/components/role/admin/table-list'
-import UploadButton from '@/components/role/admin/upload-button'
+import DetailDialog from '@/components/role/education-admin/detail-dialog'
+import Filter from '@/components/role/education-admin/filter'
+import TableActionButton from '@/components/role/education-admin/table-action-button'
+import TableList from '@/components/role/education-admin/table-list'
+import UploadButton from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PAGE_SIZE, STUDENT_STATUS_OPTIONS } from '@/constants/common'
@@ -96,7 +97,7 @@ const StudentManagementPage = () => {
   })
 
   const mutateImportExcel = useSWRMutation('import-excel', (_key, { arg }: { arg: any }) => importExcel(arg), {
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast(toastNoti('success', 'Tải tệp lên thành công'))
       queryStudents.mutate()
     },
@@ -128,16 +129,16 @@ const StudentManagementPage = () => {
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2>Quản lý sinh viên</h2>
-        <div className='flex items-center gap-2'>
-          <UploadButton handleUpload={handleUpload} loading={mutateImportExcel.isMutating} />
+      <PageHeader
+        title='Quản lý sinh viên'
+        extra={[
+          <UploadButton handleUpload={handleUpload} loading={mutateImportExcel.isMutating} />,
           <Button onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Thêm sinh viên</span>
           </Button>
-        </div>
-      </div>
+        ]}
+      />
 
       <Filter
         handleSetFilter={setFilter}
@@ -196,7 +197,7 @@ const StudentManagementPage = () => {
           { header: 'Mã SV', value: 'code', className: 'min-w-[80px] font-semibold text-blue-500' },
           { header: 'Họ và tên', value: 'name', className: 'min-w-[200px]' },
           { header: 'Email', value: 'email', className: 'min-w-[200px]' },
-          { header: 'Chuyên ngành', value: 'facultyName', className: 'min-w-[200px]' },
+          { header: 'Tên khoa', value: 'facultyName', className: 'min-w-[200px]' },
           { header: 'Năm nhập học', value: 'year', className: 'min-w-[150px]' },
           {
             header: 'Trạng thái',
@@ -221,7 +222,7 @@ const StudentManagementPage = () => {
       />
       <CommonPagination
         page={queryStudents.data?.page || 1}
-        total_page={queryStudents.data?.total_page || 1}
+        totalPage={queryStudents.data?.total_page || 1}
         handleChangePage={handleChangePage}
       />
       <DetailDialog
@@ -253,7 +254,7 @@ const StudentManagementPage = () => {
           },
           {
             type: 'select',
-            label: 'Chuyên ngành',
+            label: 'Tên khoa',
             placeholder: 'Chọn chuyên ngành',
             name: 'faculty',
             setting: {

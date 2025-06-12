@@ -1,11 +1,11 @@
 'use client'
 
 import ScoreView from '@/components/common/score-view'
-import DetailDialog from '@/components/role/admin/detail-dialog'
-import Filter from '@/components/role/admin/filter'
-import TableActionButton from '@/components/role/admin/table-action-button'
-import TableList from '@/components/role/admin/table-list'
-import UploadButton from '@/components/role/admin/upload-button'
+import DetailDialog from '@/components/role/education-admin/detail-dialog'
+import Filter from '@/components/role/education-admin/filter'
+import TableActionButton from '@/components/role/education-admin/table-action-button'
+import TableList from '@/components/role/education-admin/table-list'
+import UploadButton from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -126,7 +126,7 @@ const ScoreManagementPage = () => {
     {
       id: '11',
       name: 'Âm nhạc',
-      credit: 2,  
+      credit: 2,
       score1: 9,
       score2: 9,
       examScore: 9,
@@ -139,7 +139,7 @@ const ScoreManagementPage = () => {
       <div className='mb-4 flex items-center justify-between'>
         <h2>Quản lý điểm</h2>
         <div className='flex items-center gap-2'>
-          <UploadButton />
+          <UploadButton handleUpload={() => {}} loading={false} />
           <Button onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Thêm điểm</span>

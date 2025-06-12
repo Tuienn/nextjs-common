@@ -103,7 +103,7 @@ const AuthPage = () => {
               </div>
               Đăng ký
             </DialogTitle>
-            <DialogDescription>Chào mừng bạn đến với hệ thống quản lý đào tạo</DialogDescription>
+            <DialogDescription>Chào mừng sinh viên đến với hệ thống</DialogDescription>
           </DialogHeader>
 
           <div className={`${isOTPSended ? 'hidden' : 'block'}`}>

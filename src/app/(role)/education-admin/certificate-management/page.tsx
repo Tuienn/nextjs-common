@@ -1,25 +1,35 @@
 'use client'
 
+import CertificateBlankButton from '@/components/common/certificate-blank-button'
 import CertificateView from '@/components/common/certificate-view'
+import PageHeader from '@/components/common/page-header'
 import CommonPagination from '@/components/common/pagination'
 import { UseData } from '@/components/providers/data-provider'
-import CertificateActionButton from '@/components/role/admin/certificate-action-button'
-import DetailDialog from '@/components/role/admin/detail-dialog'
-import Filter from '@/components/role/admin/filter'
-import TableList from '@/components/role/admin/table-list'
-import UploadButton from '@/components/role/admin/upload-button'
+import CertificateActionButton from '@/components/role/education-admin/certificate-action-button'
+import DetailDialog from '@/components/role/education-admin/detail-dialog'
+import Filter from '@/components/role/education-admin/filter'
+import TableList from '@/components/role/education-admin/table-list'
+import UploadButton from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog'
-import { CERTIFICATE_TYPE_OPTIONS } from '@/constants/common'
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from '@/components/ui/dialog'
+import { CERTIFICATE_TYPE_OPTIONS, PAGE_SIZE } from '@/constants/common'
 import { toast } from '@/hooks/use-toast'
-import { createCertificate, getCertificateList, uploadCertificate } from '@/lib/api/certificate'
+import {
+  createCertificate,
+  getCertificateDataById,
+  getCertificateFile,
+  getCertificateList,
+  importCertificateExcel,
+  uploadCertificate
+} from '@/lib/api/certificate'
 import { searchStudentByCode } from '@/lib/api/student'
 import { toastNoti } from '@/lib/utils/common'
-import { formatFacultyOptions } from '@/lib/utils/format-api'
+import { formatCertificate, formatFacultyOptions } from '@/lib/utils/format-api'
 import { validateNoEmpty } from '@/lib/utils/validators'
+import { CertificateType } from '@/types/common'
 import { DialogTitle } from '@radix-ui/react-dialog'
-import { PlusIcon } from 'lucide-react'
+import { FileIcon, FileUpIcon, PlusIcon } from 'lucide-react'
 import { useState } from 'react'
 
 import { useCallback } from 'react'
@@ -28,25 +38,35 @@ import useSWRMutation from 'swr/mutation'
 
 const CertificateManagementPage = () => {
   const [idDetail, setIdDetail] = useState<string | null | undefined>(undefined)
+
   const [filter, setFilter] = useState<any>({})
-  const handleCloseDetailDialog = useCallback(() => {
+  const handleCloseDialog = useCallback(() => {
     setIdDetail(undefined)
   }, [])
 
-  const queryCertificates = useSWR('certificates' + JSON.stringify(filter), () => getCertificateList(filter))
+  const queryCertificates = useSWR('certificates' + JSON.stringify(filter), () =>
+    getCertificateList({
+      ...formatCertificate(filter, true),
+      page: filter.page || 1,
+      page_size: PAGE_SIZE,
+      faculty_code: filter.faculty || undefined,
+      signed: filter.signed || undefined,
+      course: filter.course || undefined
+    })
+  )
 
   const mutateCreateStudent = useSWRMutation('create-certificate', (_, { arg }: any) => createCertificate(arg), {
     onSuccess: () => {
       toast(toastNoti('success', 'Cấp chứng chỉ thành công'))
       queryCertificates.mutate()
-      handleCloseDetailDialog()
+      handleCloseDialog()
     },
     onError: (error) => {
       toast(toastNoti('error', error.message || 'Cấp chứng chỉ thất bại'))
     }
   })
 
-  const mutateUploadCertificate = useSWRMutation(
+  const mutateUploadCertificateFile = useSWRMutation(
     'upload-certificate',
     (_, { arg }: { arg: FormData }) => uploadCertificate(arg),
     {
@@ -60,11 +80,34 @@ const CertificateManagementPage = () => {
     }
   )
 
+  const mutateImportCertificateExcel = useSWRMutation(
+    'import-certificate-excel',
+    (_, { arg }: { arg: FormData }) => importCertificateExcel(arg),
+    {
+      onSuccess: () => {
+        toast(toastNoti('success', 'Nhập tệp excel thành công'))
+        queryCertificates.mutate()
+      },
+      onError: (error) => {
+        toast(toastNoti('error', error.message || 'Lỗi khi nhập tệp excel'))
+      }
+    }
+  )
+
+  const queryCertificateDetail = useSWR(idDetail, () => getCertificateDataById(idDetail as string))
+
   const handleUpload = useCallback(
     (file: FormData) => {
-      mutateUploadCertificate.trigger(file)
+      mutateUploadCertificateFile.trigger(file)
     },
-    [mutateUploadCertificate]
+    [mutateUploadCertificateFile]
+  )
+
+  const handleImportCertificateExcel = useCallback(
+    (file: FormData) => {
+      mutateImportCertificateExcel.trigger(file)
+    },
+    [mutateImportCertificateExcel]
   )
 
   const handleCreateCertificate = useCallback((data: any) => {
@@ -73,22 +116,33 @@ const CertificateManagementPage = () => {
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2>Quản lý chứng chỉ</h2>
-        <div className='flex items-center gap-2'>
-          <UploadButton handleUpload={handleUpload} loading={mutateUploadCertificate.isMutating} />
+      <PageHeader
+        title='Quản lý chứng chỉ'
+        extra={[
+          <UploadButton
+            handleUpload={handleImportCertificateExcel}
+            loading={mutateImportCertificateExcel.isMutating}
+            title={'Tải văn bằng (Excel)'}
+            icon={<FileUpIcon />}
+          />,
           <Button onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Cấp chứng chỉ</span>
-          </Button>
-        </div>
-      </div>
+          </Button>,
+          <UploadButton
+            handleUpload={handleUpload}
+            loading={mutateUploadCertificateFile.isMutating}
+            title={'Tải văn bằng (PDF)'}
+            icon={<FileUpIcon />}
+          />
+        ]}
+      />
       <Filter
         children={[
           {
             type: 'query_select',
             placeholder: 'Nhập và chọn mã sinh viên',
-            name: 'code',
+            name: 'studentCode',
             setting: {
               querySelect: {
                 queryFn: (keyword: string) => searchStudentByCode(keyword)
@@ -127,8 +181,8 @@ const CertificateManagementPage = () => {
           },
           {
             type: 'input',
-            name: 'year',
-            placeholder: 'Nhập năm học',
+            name: 'course',
+            placeholder: 'Nhập năm nhập học',
             setting: {
               input: {
                 type: 'number'
@@ -137,16 +191,16 @@ const CertificateManagementPage = () => {
           },
           {
             type: 'select',
-            name: 'status',
-            placeholder: 'Chọn trạng thái kí',
+            name: 'signed',
+            placeholder: 'Chọn trạng thái ký',
             setting: {
               select: {
                 groups: [
                   {
                     label: undefined,
                     options: [
-                      { value: 'true', label: 'Đã kí' },
-                      { value: 'false', label: 'Chưa kí' }
+                      { value: 'true', label: 'Đã ký' },
+                      { value: 'false', label: 'Chưa ký' }
                     ]
                   }
                 ]
@@ -160,15 +214,15 @@ const CertificateManagementPage = () => {
         children={[
           { header: 'Mã SV', value: 'studentCode', className: 'min-w-[80px] font-semibold text-blue-500' },
           { header: 'Họ và tên', value: 'studentName', className: 'min-w-[200px]' },
-          { header: 'Chuyên ngành', value: 'facultyName', className: 'min-w-[150px]' },
+          { header: 'Tên khoa', value: 'facultyName', className: 'min-w-[150px]' },
           { header: 'Loại bằng', value: 'certificateType', className: 'min-w-[100px]' },
           { header: 'Ngày cấp', value: 'date', className: 'min-w-[100px]' },
           {
-            header: 'Trạng thái kí',
+            header: 'Trạng thái ký',
             value: 'signed',
             className: 'min-w-[100px]',
             render: (item) => (
-              <Badge variant={item.signed ? 'default' : 'outline'}>{item.signed ? 'Đã kí' : 'Chưa kí'}</Badge>
+              <Badge variant={item.signed ? 'default' : 'outline'}>{item.signed ? 'Đã ký' : 'Chưa ký'}</Badge>
             )
           },
           {
@@ -182,7 +236,7 @@ const CertificateManagementPage = () => {
       />
       <CommonPagination
         page={queryCertificates.data?.page || 1}
-        total_page={queryCertificates.data?.total_page || 1}
+        totalPage={queryCertificates.data?.total_page || 1}
         handleChangePage={(page) => {
           setFilter({ ...filter, page })
         }}
@@ -228,37 +282,35 @@ const CertificateManagementPage = () => {
           {
             type: 'input',
             name: 'serialNumber',
-            placeholder: 'Nhập số seri',
-            label: 'Số seri',
-            validator: validateNoEmpty('Số seri')
+            placeholder: 'Nhập số hiệu',
+            label: 'Số hiệu',
+            validator: validateNoEmpty('Số hiệu')
           },
           {
             type: 'input',
             name: 'regNo',
-            placeholder: 'Nhập số đăng ký',
-            label: 'Số đăng ký',
-            validator: validateNoEmpty('Số đăng ký')
+            placeholder: 'Nhập số vào sổ gốc cấp văn bằng',
+            label: 'Số vào sổ gốc cấp văn bằng',
+            validator: validateNoEmpty('Số vào sổ gốc cấp văn bằng')
           }
         ]}
         data={[]}
         mode={idDetail === null ? 'create' : undefined}
         handleSubmit={handleCreateCertificate}
-        handleClose={handleCloseDetailDialog}
+        handleClose={handleCloseDialog}
       />
-      <CertificateView
-        universityName='Trường đại học Bách Khoa Hà Nội'
-        universityCode='BKHN'
-        facultyName='Khoa học máy tính'
-        facultyCode='KHMT'
-        studentCode='1234567890'
-        studentName='Nguyễn Văn A'
-        name='Bằng đại học'
-        date='2021-01-01'
-        certificateType='Bằng đại học'
-        signed={true}
-        serialNumber='1234567890'
-        regNo='1234567890'
-      />
+
+      <Dialog open={!!idDetail} onOpenChange={(open) => open || handleCloseDialog()}>
+        <DialogContent className='max-h-[80vh] overflow-y-scroll'>
+          <DialogHeader>
+            <DialogTitle>{'Thông tin chứng chỉ'}</DialogTitle>
+          </DialogHeader>
+          <CertificateView data={queryCertificateDetail.data as CertificateType} />
+          <DialogFooter>
+            <CertificateBlankButton isIcon={false} action={() => getCertificateFile(idDetail as string)} />
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

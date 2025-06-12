@@ -13,9 +13,10 @@ import {
   navigationMenuTriggerStyle
 } from '../ui/navigation-menu'
 import Link from 'next/link'
+import ChangePassButton from './change-pass-button'
 
 interface Props {
-  role: 'student' | 'admin' | null
+  role: 'student' | 'university_admin' | 'admin' | null
 }
 
 const educationAdminPages: { title: string; href: string }[] = [
@@ -27,10 +28,10 @@ const educationAdminPages: { title: string; href: string }[] = [
     title: 'Quản lý sinh viên',
     href: '/education-admin/student-management'
   },
-  {
-    title: 'Quản lý điểm',
-    href: '/education-admin/score-management'
-  },
+  // {
+  //   title: 'Quản lý điểm',
+  //   href: '/education-admin/score-management'
+  // },
   {
     title: 'Quản lý chứng chỉ',
     href: '/education-admin/certificate-management'
@@ -42,18 +43,30 @@ const studentPages: { title: string; href: string }[] = [
     title: 'Thông tin cá nhân',
     href: '/student/information'
   },
-  {
-    title: 'Kết quả học tập',
-    href: '/student/score'
-  },
+  // {
+  //   title: 'Kết quả học tập',
+  //   href: '/student/score'
+  // },
   {
     title: 'Thông tin chứng chỉ',
     href: '/student/certificate'
   }
 ]
 
+const adminPages: { title: string; href: string }[] = [
+  {
+    title: 'Quản lý tài khoản đào tạo',
+    href: '/admin/education-management'
+  }
+  // {
+  //   title: 'Quản lý tài khoản sinh viên',
+  //   href: '/admin/student--management'
+  // }
+]
+
 const Header: React.FC<Props> = (props) => {
-  const navList = props.role === 'admin' ? educationAdminPages : studentPages
+  const navList =
+    props.role === 'university_admin' ? educationAdminPages : props.role === 'admin' ? adminPages : studentPages
   return (
     <div className='fixed top-0 z-10 h-16 w-full bg-primary-foreground shadow-lg'>
       <header className='container flex h-full items-center justify-between'>
@@ -79,7 +92,7 @@ const Header: React.FC<Props> = (props) => {
                 ))}
               </SheetContent>
             </Sheet>
-            <div className='h-9 w-9'></div>
+            {props.role !== 'admin' && <ChangePassButton className='flex md:hidden' />}
           </div>
         ) : null}
 
@@ -104,7 +117,10 @@ const Header: React.FC<Props> = (props) => {
 
         <div className='flex items-center gap-2'>
           {props.role !== null ? (
-            <SignOutButton />
+            <>
+              <SignOutButton />
+              {props.role !== 'admin' && <ChangePassButton className='hidden md:flex' />}
+            </>
           ) : (
             <Button>
               <Link href='/auth/sign-in'>Đăng nhập</Link>

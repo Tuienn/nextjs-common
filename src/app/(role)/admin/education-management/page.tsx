@@ -1,0 +1,85 @@
+'use client'
+
+import PageHeader from '@/components/common/page-header'
+import TableList from '@/components/role/education-admin/table-list'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { toast } from '@/hooks/use-toast'
+import { approveUniversity, getUniversityList, rejectUniversity } from '@/lib/api/university'
+import { cn } from '@/lib/utils'
+import { toastNoti } from '@/lib/utils/common'
+import { PackageCheckIcon, PackageXIcon } from 'lucide-react'
+import useSWR from 'swr'
+import useSWRMutation from 'swr/mutation'
+
+const EducationManagementPage = () => {
+  const queryUniversityList = useSWR('university-list', () => getUniversityList())
+  const mutateApproveUniversity = useSWRMutation(
+    'approve-university',
+    (_, { arg }: { arg: string }) => approveUniversity(arg),
+    {
+      onSuccess: () => {
+        toast(toastNoti('success', 'Duyệt trường thành công'))
+        queryUniversityList.mutate()
+      },
+      onError: (error) => {
+        toast(toastNoti('error', error.message || 'Duyệt trường thất bại'))
+      }
+    }
+  )
+  const mutateRejectUniversity = useSWRMutation(
+    'reject-university',
+    (_, { arg }: { arg: string }) => rejectUniversity(arg),
+    {
+      onSuccess: () => {
+        toast(toastNoti('success', 'Từ chối trường thành công'))
+        queryUniversityList.mutate()
+      },
+      onError: (error) => {
+        toast(toastNoti('error', error.message || 'Từ chối trường thất bại'))
+      }
+    }
+  )
+
+  return (
+    <>
+      <PageHeader title='Quản lý tài khoản đào tạo' />
+      <TableList
+        children={[
+          { header: 'Mã trường', value: 'university_code', className: 'font-semibold text-blue-500 min-w-[100px]' },
+          { header: 'Tên trường', value: 'university_name' },
+          { header: 'Địa chỉ', value: 'address' },
+          { header: 'Email đào tạo', value: 'email_domain' },
+          {
+            header: 'Trạng thái',
+            value: 'status',
+            render: (item) => (
+              <Badge
+                variant={item.status === 'pending' ? 'outline' : item.status === 'approved' ? 'default' : 'destructive'}
+              >
+                {item.status === 'pending' ? 'Chờ duyệt' : item.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}
+              </Badge>
+            )
+          },
+          {
+            header: 'Hành động',
+            value: 'action',
+            render: (item) => (
+              <div className={cn('flex items-center gap-2', item.status !== 'pending' && 'hidden')}>
+                <Button size={'icon'} onClick={() => mutateApproveUniversity.trigger(item.id)}>
+                  <PackageCheckIcon />
+                </Button>
+                <Button size={'icon'} variant={'destructive'} onClick={() => mutateRejectUniversity.trigger(item.id)}>
+                  <PackageXIcon />
+                </Button>
+              </div>
+            )
+          }
+        ]}
+        data={queryUniversityList.data ?? []}
+      />
+    </>
+  )
+}
+
+export default EducationManagementPage

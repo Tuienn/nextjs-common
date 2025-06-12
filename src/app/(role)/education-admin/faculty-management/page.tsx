@@ -1,12 +1,14 @@
 'use client'
+import PageHeader from '@/components/common/page-header'
 import { UseData, UseRefetchFacultyList } from '@/components/providers/data-provider'
-import DetailDialog from '@/components/role/admin/detail-dialog'
-import TableActionButton from '@/components/role/admin/table-action-button'
-import TableList from '@/components/role/admin/table-list'
+import DetailDialog from '@/components/role/education-admin/detail-dialog'
+import TableActionButton from '@/components/role/education-admin/table-action-button'
+import TableList from '@/components/role/education-admin/table-list'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { createFaculty, deleteFaculty, getFacultyById, updateFaculty } from '@/lib/api/faculty'
 import { toastNoti } from '@/lib/utils/common'
+import { validateNoEmpty } from '@/lib/utils/validators'
 import { PlusIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import useSWR from 'swr'
@@ -79,14 +81,15 @@ const FacultyManagementPage = () => {
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2>Quản lý khoa</h2>
-        <Button onClick={() => setIdDetail(null)}>
-          <PlusIcon />
-          <span className='hidden sm:block'>Thêm khoa</span>
-        </Button>
-      </div>
-
+      <PageHeader
+        title='Quản lý khoa'
+        extra={[
+          <Button onClick={() => setIdDetail(null)}>
+            <PlusIcon />
+            <span className='hidden sm:block'>Thêm khoa</span>
+          </Button>
+        ]}
+      />
       {/* <Filter
         children={[
           {
@@ -122,13 +125,15 @@ const FacultyManagementPage = () => {
             type: 'input',
             placeholder: 'Nhập mã khoa',
             name: 'code',
-            label: 'Mã khoa'
+            label: 'Mã khoa',
+            validator: validateNoEmpty('Mã khoa')
           },
           {
             type: 'input',
             placeholder: 'Nhập tên khoa',
             name: 'name',
-            label: 'Tên khoa'
+            label: 'Tên khoa',
+            validator: validateNoEmpty('Tên khoa')
           }
         ]}
         data={queryFacultyDetail.data || {}}

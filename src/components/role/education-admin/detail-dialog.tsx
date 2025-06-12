@@ -86,7 +86,7 @@ const DetailDialog: React.FC<Props> = (props) => {
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant='outline' type='button'>
-                  Hủy
+                  Hủy bỏ
                 </Button>
               </DialogClose>
               <Button type='submit'>{localMode === 'create' ? 'Tạo mới' : 'Cập nhật'}</Button>

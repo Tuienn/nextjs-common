@@ -1,5 +1,7 @@
+import CertificateBlankButton from '@/components/common/certificate-blank-button'
 import { Button } from '@/components/ui/button'
-import { DownloadIcon, EyeIcon, PencilIcon } from 'lucide-react'
+import { getCertificateFile } from '@/lib/api/certificate'
+import { EyeIcon } from 'lucide-react'
 
 interface Props {
   id: string
@@ -12,10 +14,7 @@ const CertificateActionButton: React.FC<Props> = (props) => {
       <Button size={'icon'} onClick={() => props.handleSetIdDetail(props.id)}>
         <EyeIcon />
       </Button>
-
-      <Button variant={'outline'} size={'icon'}>
-        <DownloadIcon />
-      </Button>
+      <CertificateBlankButton isIcon={true} action={() => getCertificateFile(props.id)} />
     </div>
   )
 }

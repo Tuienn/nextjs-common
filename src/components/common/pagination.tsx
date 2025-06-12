@@ -10,18 +10,18 @@ import {
 
 interface Props {
   page: number
-  total_page: number
+  totalPage: number
   handleChangePage: (page: number) => void
 }
 
-const CommonPagination = ({ page, total_page, handleChangePage }: Props) => {
+const CommonPagination = ({ page, totalPage, handleChangePage }: Props) => {
   // Helper function to generate page numbers to display
   const getPageNumbers = () => {
     const pages: (number | 'ellipsis')[] = []
 
-    if (total_page <= 7) {
+    if (totalPage <= 7) {
       // Show all pages if total is 7 or less
-      for (let i = 1; i <= total_page; i++) {
+      for (let i = 1; i <= totalPage; i++) {
         pages.push(i)
       }
     } else {
@@ -34,11 +34,11 @@ const CommonPagination = ({ page, total_page, handleChangePage }: Props) => {
           pages.push(i)
         }
         pages.push('ellipsis')
-        pages.push(total_page)
-      } else if (page >= total_page - 3) {
+        pages.push(totalPage)
+      } else if (page >= totalPage - 3) {
         // Show ellipsis and last 5 pages
         pages.push('ellipsis')
-        for (let i = total_page - 4; i <= total_page; i++) {
+        for (let i = totalPage - 4; i <= totalPage; i++) {
           pages.push(i)
         }
       } else {
@@ -48,7 +48,7 @@ const CommonPagination = ({ page, total_page, handleChangePage }: Props) => {
           pages.push(i)
         }
         pages.push('ellipsis')
-        pages.push(total_page)
+        pages.push(totalPage)
       }
     }
 
@@ -82,8 +82,8 @@ const CommonPagination = ({ page, total_page, handleChangePage }: Props) => {
 
           <PaginationItem className='cursor-pointer'>
             <PaginationNext
-              onClick={() => page < total_page && handleChangePage(page + 1)}
-              className={page >= total_page ? 'pointer-events-none opacity-50' : ''}
+              onClick={() => page < totalPage && handleChangePage(page + 1)}
+              className={page >= totalPage ? 'pointer-events-none opacity-50' : ''}
             />
           </PaginationItem>
         </PaginationContent>

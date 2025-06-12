@@ -1,21 +1,87 @@
 import { queryString } from '../utils/common'
-import { formatCertificate } from '../utils/format-api'
+import { formatCertificate, formatCertificateVerifyCode, formatCertificateView } from '../utils/format-api'
 import apiService from './root'
 
 export const getCertificateList = async (params: any) => {
-  const response = await apiService('GET', queryString(['certificates', 'search'], params))
+  const res = await apiService('GET', queryString(['certificates', 'search'], params))
   return {
-    ...response,
-    data: response.data.map((item: any) => formatCertificate(item))
+    ...res,
+    data: res.data.map((item: any) => formatCertificate(item))
   }
 }
 
 export const createCertificate = async (data: any) => {
-  const response = await apiService('POST', 'certificates', formatCertificate(data, true))
-  return response
+  const res = await apiService('POST', 'certificates', formatCertificate(data, true))
+  return res
 }
 
 export const uploadCertificate = async (data: any) => {
-  const response = await apiService('POST', 'certificates/upload-pdf', data)
-  return response
+  const res = await apiService('POST', 'certificates/upload-pdf', data)
+  return res
+}
+
+export const importCertificateExcel = async (data: any) => {
+  const res = await apiService('POST', 'certificates/import-excel', data)
+  return res
+}
+
+export const getCertificateDataById = async (id: string) => {
+  const res = await apiService('GET', `certificates/${id}`)
+  return formatCertificateView(res.data)
+}
+
+export const getCertificateFile = async (id: string) => {
+  const res =
+    id === 'my-file'
+      ? await apiService('GET', 'certificates/my-file', undefined, true, {}, true)
+      : await apiService('GET', `certificates/file/${id}`, undefined, true, {}, true)
+  return res
+}
+
+export const getVerifyCodeList = async (params: any) => {
+  const res = await apiService('GET', queryString(['verification', 'my-codes'], params))
+  return {
+    ...res,
+    data: res.data.map((item: any) => formatCertificateVerifyCode(item))
+  }
+}
+
+export const createVerifyCode = async (data: any) => {
+  const formattedData = formatCertificateVerifyCode(data, true) as Record<string, string | number | null | undefined>
+  const res = await apiService('POST', 'verification/create', formattedData)
+  return res
+}
+
+export const getCertificateDataStudent = async () => {
+  const res = await apiService('GET', 'certificates/my-certificate')
+
+  return formatCertificateView(res.data[0])
+}
+
+export const verifyCodeDataforGuest = async (code: string) => {
+  const res = await apiService(
+    'POST',
+    'auth/verification',
+    {
+      code,
+      view_type: 'data'
+    },
+    false
+  )
+  return formatCertificateView(res.data)
+}
+
+export const verifyCodeFileforGuest = async (code: string) => {
+  const res = await apiService(
+    'POST',
+    'auth/verification',
+    {
+      code,
+      view_type: 'file'
+    },
+    false,
+    {},
+    true
+  )
+  return res
 }

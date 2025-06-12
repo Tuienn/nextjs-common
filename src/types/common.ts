@@ -43,3 +43,18 @@ export interface CustomZodFormItem extends Omit<CustomFormItem, 'control'> {
   validator?: z.ZodType
   defaultValue?: any
 }
+
+export type CertificateType = {
+  universityName: string
+  universityCode: string
+  facultyName: string
+  facultyCode: string
+  studentCode: string
+  studentName: string
+  name: string
+  date: string
+  certificateType: string
+  signed: boolean
+  serialNumber: string
+  regNo: string
+}
