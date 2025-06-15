@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { toast, ToasterProps } from 'sonner'
 
 export function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null
@@ -23,10 +24,34 @@ export const queryString = (slashParams: (string | number)[], params?: any) => {
   return `${slashParams.join('/')}${queryString ? '?' + queryString : ''}`
 }
 
-export const toastNoti = (type: 'success' | 'error', message?: string) => {
-  return {
-    title: 'Thông báo',
-    description: message || (type === 'success' ? 'Thao tác thành công' : 'Thao tác thất bại'),
-    variant: type === 'success' ? 'default' : ('destructive' as 'default' | 'destructive')
-  }
+export const showNotification = (
+  type: 'success' | 'error' | 'info' | 'warning' | 'message',
+  description: string,
+  setting?: ToasterProps
+) => {
+  return toast[type]('Thông báo', {
+    description:
+      description ||
+      {
+        success: 'Thao tác thành công',
+        error: 'Thao tác thất bại',
+        info: 'Thông tin',
+        warning: 'Cảnh báo',
+        message: 'Tin nhắn'
+      }[type],
+    classNames: {
+      success: '[&_svg]:!text-green-500',
+      error: '[&_svg]:!text-red-500',
+      info: '[&_svg]:!text-blue-500',
+      warning: '[&_svg]:!text-yellow-500'
+    },
+    ...setting
+  })
+}
+
+export const showMessage = (description: string, setting?: ToasterProps) => {
+  return toast(description, {
+    position: 'top-center',
+    ...setting
+  })
 }

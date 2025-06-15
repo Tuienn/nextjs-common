@@ -11,7 +11,7 @@ import UploadButton from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PAGE_SIZE, STUDENT_STATUS_OPTIONS } from '@/constants/common'
-import { toast } from '@/hooks/use-toast'
+
 import {
   createStudent,
   deleteStudent,
@@ -20,7 +20,7 @@ import {
   searchStudent,
   updateStudent
 } from '@/lib/api/student'
-import { toastNoti } from '@/lib/utils/common'
+import { showNotification } from '@/lib/utils/common'
 import { formatFacultyOptions, formatStudent } from '@/lib/utils/format-api'
 
 import { validateAcademicEmail } from '@/lib/utils/validators'
@@ -55,18 +55,18 @@ const StudentManagementPage = () => {
 
   const queryStudentDetail = useSWR(idDetail, () => getStudentById(idDetail as string), {
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi lấy thông tin sinh viên'))
+      showNotification('error', error.message || 'Lỗi khi lấy thông tin sinh viên')
     }
   })
 
   const mutateCreateStudent = useSWRMutation('create-student', (_key, { arg }: { arg: any }) => createStudent(arg), {
     onSuccess: () => {
-      toast(toastNoti('success', 'Thêm sinh viên thành công'))
+      showNotification('success', 'Thêm sinh viên thành công')
       queryStudents.mutate()
       setIdDetail(undefined)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi thêm sinh viên'))
+      showNotification('error', error.message || 'Lỗi khi thêm sinh viên')
     }
   })
 
@@ -75,34 +75,36 @@ const StudentManagementPage = () => {
     (_key, { arg }: { arg: any }) => updateStudent(idDetail as string, arg),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Cập nhật sinh viên thành công'))
+        showNotification('success', 'Cập nhật sinh viên thành công')
         queryStudents.mutate()
         setIdDetail(undefined)
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || 'Lỗi khi cập nhật sinh viên'))
+        showNotification('error', error.message || 'Lỗi khi cập nhật sinh viên')
       }
     }
   )
 
   const mutateDeleteStudent = useSWRMutation('delete-student', (_key, { arg }: { arg: any }) => deleteStudent(arg), {
     onSuccess: () => {
-      toast(toastNoti('success', 'Xóa sinh viên thành công'))
+      showNotification('success', 'Xóa sinh viên thành công')
       queryStudents.mutate()
       setIdDetail(undefined)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi xóa sinh viên'))
+      showNotification('error', error.message || 'Lỗi khi xóa sinh viên')
     }
   })
 
   const mutateImportExcel = useSWRMutation('import-excel', (_key, { arg }: { arg: any }) => importExcel(arg), {
     onSuccess: (data) => {
-      toast(toastNoti('success', 'Tải tệp lên thành công'))
+      console.log('🚀 ~ mutateImportExcel ~ data:', data)
+
+      showNotification('success', 'Tải tệp lên thành công')
       queryStudents.mutate()
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi tải tệp lên'))
+      showNotification('error', error.message || 'Lỗi khi tải tệp lên')
     }
   })
   const handleDelete = useCallback((id: string) => {

@@ -5,9 +5,9 @@ import DetailDialog from '@/components/role/education-admin/detail-dialog'
 import TableActionButton from '@/components/role/education-admin/table-action-button'
 import TableList from '@/components/role/education-admin/table-list'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/hooks/use-toast'
+
 import { createFaculty, deleteFaculty, getFacultyById, updateFaculty } from '@/lib/api/faculty'
-import { toastNoti } from '@/lib/utils/common'
+import { showNotification } from '@/lib/utils/common'
 import { validateNoEmpty } from '@/lib/utils/validators'
 import { PlusIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -23,17 +23,17 @@ const FacultyManagementPage = () => {
   }, [])
   const queryFacultyDetail = useSWR(idDetail, () => getFacultyById(idDetail as string), {
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi lấy thông tin khoa'))
+      showNotification('error', error.message || 'Lỗi khi lấy thông tin khoa')
     }
   })
   const mutateCreateFaculty = useSWRMutation('create-faculty', (_key, { arg }: { arg: any }) => createFaculty(arg), {
     onSuccess: () => {
-      toast(toastNoti('success', 'Thêm khoa thành công'))
+      showNotification('success', 'Thêm khoa thành công')
       UseRefetchFacultyList()
       setIdDetail(undefined)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi thêm khoa'))
+      showNotification('error', error.message || 'Lỗi khi thêm khoa')
     }
   })
   const mutateUpdateFaculty = useSWRMutation(
@@ -41,23 +41,23 @@ const FacultyManagementPage = () => {
     (_key, { arg }: { arg: any }) => updateFaculty(idDetail as string, arg),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Cập nhật khoa thành công'))
+        showNotification('success', 'Cập nhật khoa thành công')
         UseRefetchFacultyList()
         setIdDetail(undefined)
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || 'Lỗi khi cập nhật khoa'))
+        showNotification('error', error.message || 'Lỗi khi cập nhật khoa')
       }
     }
   )
 
   const mutateDeleteFaculty = useSWRMutation('delete-faculty', (_key, { arg }: { arg: any }) => deleteFaculty(arg), {
     onSuccess: () => {
-      toast(toastNoti('success', 'Xóa khoa thành công'))
+      showNotification('success', 'Xóa khoa thành công')
       UseRefetchFacultyList()
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi xóa khoa'))
+      showNotification('error', error.message || 'Lỗi khi xóa khoa')
     }
   })
 

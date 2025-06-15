@@ -1,3 +1,4 @@
+import { CertificateType } from '@/types/common'
 import { format } from 'date-fns'
 
 export const formatStudent = (data: any, isSendToServer: boolean = false) => {
@@ -46,9 +47,10 @@ export const formatCertificate = (data: any, isSendToServer: boolean = false) =>
     ? {
         student_code: data.studentCode,
         name: data.name,
-        certificate_type: data.certificateType,
+        certificate_type: data.certificateType ? Number(data.certificateType) : undefined,
         serial_number: data.serialNumber,
-        reg_no: data.regNo
+        reg_no: data.regNo,
+        issue_date: data.date ? format(new Date(data.date), 'dd/mm/yyyy') : undefined
       }
     : {
         id: data.id,
@@ -57,9 +59,10 @@ export const formatCertificate = (data: any, isSendToServer: boolean = false) =>
         faculty: data.faculty_code,
         facultyName: data.faculty_name,
         certificateType: data.certificate_type,
-        date: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
+        date: data.issue_date,
         signed: data.signed,
-        name: data.name
+        name: data.name,
+        isDegree: data.certificate_type !== undefined
       }
 }
 
@@ -70,7 +73,7 @@ export const formatCertificateView = (data: any) => {
     facultyCode: data.faculty_code,
     facultyName: data.faculty_name,
     certificateType: data.certificate_type,
-    date: format(new Date(data.created_at), 'dd/MM/yyyy HH:mm:ss'),
+    date: data.issue_date,
     name: data.name,
     universityName: data.university_name,
     universityCode: data.university_code,

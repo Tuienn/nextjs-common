@@ -53,7 +53,7 @@ const UploadButton: React.FC<Props> = (props) => {
         variant='outline'
         onClick={handleButtonClick}
         isLoading={props.loading}
-        title='Có hỗ trợ tải nhiều file cùng lúc'
+        title='Có hỗ trợ tải nhiều tệp cùng lúc'
       >
         {props.icon || <UploadIcon />}
         <span className='hidden sm:block'>{props.title || 'Tải tệp lên'}</span>

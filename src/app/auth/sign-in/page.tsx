@@ -10,7 +10,7 @@ import Image from 'next/image'
 import XrmSvg from '../../../../public/assets/svg/xrm.svg'
 import background from '../../../../public/assets/images/background.jpg'
 import { signIn } from '@/lib/auth/auth'
-import { useToast } from '@/hooks/use-toast'
+import { showNotification } from '@/lib/utils/common'
 import Link from 'next/link'
 import { validateEmail, validatePassword } from '@/lib/utils/validators'
 import { useRouter } from 'next/navigation'
@@ -20,7 +20,6 @@ const formSchma = z.object({
 })
 
 const SignInPage = () => {
-  const { toast } = useToast()
   const router = useRouter()
   const form = useForm<z.infer<typeof formSchma>>({
     resolver: zodResolver(formSchma),
@@ -33,16 +32,9 @@ const SignInPage = () => {
   const handleSubmit = async (data: z.infer<typeof formSchma>) => {
     const res = await signIn(data)
     if (res === false) {
-      toast({
-        title: 'Lỗi',
-        description: 'Email hoặc mật khẩu không chính xác',
-        variant: 'destructive'
-      })
+      showNotification('error', 'Email hoặc mật khẩu không chính xác')
     } else {
-      toast({
-        title: 'Thành công',
-        description: 'Đăng nhập thành công'
-      })
+      showNotification('success', 'Đăng nhập thành công')
       router.refresh()
     }
   }

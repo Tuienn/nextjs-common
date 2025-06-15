@@ -11,12 +11,13 @@ export const getCertificateList = async (params: any) => {
 }
 
 export const createCertificate = async (data: any) => {
-  const res = await apiService('POST', 'certificates', formatCertificate(data, true))
+  const formattedData = formatCertificate(data, true) as Record<string, string | number | null | undefined>
+  const res = await apiService('POST', 'certificates', formattedData)
   return res
 }
 
 export const uploadCertificate = async (data: any) => {
-  const res = await apiService('POST', 'certificates/upload-pdf', data)
+  const res = await apiService('POST', 'certificates/upload-pdf?is_degree=true', data)
   return res
 }
 
@@ -27,14 +28,12 @@ export const importCertificateExcel = async (data: any) => {
 
 export const getCertificateDataById = async (id: string) => {
   const res = await apiService('GET', `certificates/${id}`)
+
   return formatCertificateView(res.data)
 }
 
 export const getCertificateFile = async (id: string) => {
-  const res =
-    id === 'my-file'
-      ? await apiService('GET', 'certificates/my-file', undefined, true, {}, true)
-      : await apiService('GET', `certificates/file/${id}`, undefined, true, {}, true)
+  const res = await apiService('GET', `certificates/file/${id}`, undefined, true, {}, true)
   return res
 }
 
@@ -84,4 +83,9 @@ export const verifyCodeFileforGuest = async (code: string) => {
     true
   )
   return res
+}
+
+export const getCertificatesNameByStudent = async () => {
+  const res = await apiService('GET', 'certificates/simple')
+  return res.data
 }

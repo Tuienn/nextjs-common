@@ -2,8 +2,7 @@
 import useSWRMutation from 'swr/mutation'
 import { Button } from '../ui/button'
 import { FileTextIcon, DownloadIcon } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
-import { toastNoti } from '@/lib/utils/common'
+import { showNotification } from '@/lib/utils/common'
 
 interface Props {
   isIcon?: boolean
@@ -22,7 +21,7 @@ const CertificateBlankButton: React.FC<Props> = (props) => {
       }, 100)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi xem tệp'))
+      showNotification('error', error.message || 'Lỗi khi xem tệp')
     }
   })
   const mutateDownloadFile = useSWRMutation(`certificate-file-download`, props.action, {
@@ -41,7 +40,7 @@ const CertificateBlankButton: React.FC<Props> = (props) => {
       }, 100)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || 'Lỗi khi tải xuống tệp'))
+      showNotification('error', error.message || 'Lỗi khi tải xuống tệp')
     }
   })
 

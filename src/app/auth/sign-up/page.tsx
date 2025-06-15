@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import XrmSvg from '../../../../public/assets/svg/xrm.svg'
 import background from '../../../../public/assets/images/background.jpg'
-import { useToast } from '@/hooks/use-toast'
+import { showNotification } from '@/lib/utils/common'
 import { validateEmail, validatePassword } from '@/lib/utils/validators'
 import Link from 'next/link'
 import { InputOTPGroup, InputOTPSeparator } from '@/components/ui/input-otp'
@@ -21,7 +21,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import useSWRMutation from 'swr/mutation'
 import { registerAccount, sendOTP, verifyOTP } from '@/lib/api/auth'
-import { toastNoti } from '@/lib/utils/common'
+
 import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import { signIn } from '@/lib/auth/auth'
 import { useRouter } from 'next/navigation'
@@ -31,7 +31,6 @@ const formPersonalEmailSchma = z.object({
 })
 
 const AuthPage = () => {
-  const { toast } = useToast()
   const [isOTPSended, setIsOTPSended] = useState(false)
   const [isOTPVerified, setIsOTPVerified] = useState(false)
   const formPersonalEmail = useForm<z.infer<typeof formPersonalEmailSchma>>({
@@ -47,22 +46,22 @@ const AuthPage = () => {
   const [idUserAfterVerifyOTP, setIdUserAfterVerifyOTP] = useState('')
   const mutateSendOTP = useSWRMutation('/auth/request-otp', () => sendOTP(inputEmail), {
     onSuccess: () => {
-      toast(toastNoti('success', `Mã OTP đã được gửi đến email ${inputEmail}`))
+      showNotification('success', `Mã OTP đã được gửi đến email ${inputEmail}`)
       setIsOTPSended(true)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || error.error))
+      showNotification('error', error.message || error.error)
     }
   })
 
   const mutateVerifyOTP = useSWRMutation('/auth/verify-otp', () => verifyOTP(inputEmail, inputOTP), {
     onSuccess: (data) => {
-      toast(toastNoti('success', 'Xác thực thành công'))
+      showNotification('success', 'Xác thực thành công')
       setIsOTPVerified(true)
       setIdUserAfterVerifyOTP(data.user_id)
     },
     onError: (error) => {
-      toast(toastNoti('error', error.message || error.error))
+      showNotification('error', error.message || error.error || 'Xác thực thất bại')
     }
   })
 
@@ -71,7 +70,7 @@ const AuthPage = () => {
     (_, { arg }: { arg: any }) => registerAccount(arg.email, arg.password, idUserAfterVerifyOTP),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Đăng ký tài khoản thành công'))
+        showNotification('success', 'Đăng ký tài khoản thành công')
         signIn({
           email: formPersonalEmail.getValues('email'),
           password: formPersonalEmail.getValues('password')
@@ -79,7 +78,7 @@ const AuthPage = () => {
         router.refresh()
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || error.error))
+        showNotification('error', error.message || error.error || 'Đăng ký tài khoản thất bại')
       }
     }
   )

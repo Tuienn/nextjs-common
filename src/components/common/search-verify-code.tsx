@@ -5,13 +5,10 @@ import { Input } from '@/components/ui/input'
 
 import { useState } from 'react'
 import useSWRMutation from 'swr/mutation'
-import CertificateView from './certificate-view'
-import { CertificateType } from '@/types/common'
-import CertificateBlankButton from './certificate-blank-button'
-import { toast } from '@/hooks/use-toast'
-import { toastNoti } from '@/lib/utils/common'
-import { verifyCodeDataforGuest, verifyCodeFileforGuest } from '@/lib/api/certificate'
+
+import { verifyCodeDataforGuest } from '@/lib/api/certificate'
 import UseBreakpoint from '@/lib/hooks/use-breakpoint'
+import { showNotification } from '@/lib/utils/common'
 
 const SearchVerifyCode = () => {
   const { md } = UseBreakpoint()
@@ -22,7 +19,7 @@ const SearchVerifyCode = () => {
     (_, { arg }: { arg: string }) => verifyCodeDataforGuest(arg),
     {
       onError(error) {
-        toast(toastNoti('error', error.message || 'Lỗi khi xác thực mã xác minh'))
+        showNotification('error', error.message || 'Lỗi khi xác thực mã xác minh')
       }
     }
   )
@@ -48,12 +45,12 @@ const SearchVerifyCode = () => {
         </CardContent>
       </Card>
 
-      {mutateDataVerifyCode.data && (
+      {/* {mutateDataVerifyCode.data && (
         <Card className='mt-6 w-full max-w-[800px]'>
           <CardHeader>
             <CardTitle>
               <div className='flex items-center justify-between'>
-                <span>Thông tin chứng chỉ</span>
+                <span>Thông tin văn bằng - chứng chỉ</span>
                 <CertificateBlankButton isIcon={md ? false : true} action={() => verifyCodeFileforGuest(verifyCode)} />
               </div>
             </CardTitle>
@@ -65,7 +62,7 @@ const SearchVerifyCode = () => {
             />
           </CardContent>
         </Card>
-      )}
+      )} */}
     </>
   )
 }

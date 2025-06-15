@@ -16,6 +16,7 @@ interface Props {
   mode: 'create' | 'update' | undefined
   handleSubmit: (data: any) => void
   handleClose: () => void
+  title?: string
 }
 
 const DetailDialog: React.FC<Props> = (props) => {
@@ -76,7 +77,7 @@ const DetailDialog: React.FC<Props> = (props) => {
     <Dialog open={props.mode !== undefined} onOpenChange={handleOpenChange}>
       <DialogContent className='max-h-[80vh] overflow-y-scroll sm:max-w-[500px]'>
         <DialogHeader>
-          <DialogTitle>{localMode === 'create' ? 'Tạo mới dữ liệu' : 'Cập nhật dữ liệu'}</DialogTitle>
+          <DialogTitle>{props.title || (localMode === 'create' ? 'Tạo mới dữ liệu' : 'Cập nhật dữ liệu')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(props.handleSubmit)} className='space-y-4'>

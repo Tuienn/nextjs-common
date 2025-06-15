@@ -8,10 +8,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import useSWRMutation from 'swr/mutation'
 import { createVerifyCode } from '@/lib/api/certificate'
-import { toast } from '@/hooks/use-toast'
-import { toastNoti } from '@/lib/utils/common'
+
 import CustomFormItem from '@/components/common/ct-form-item'
 import { mutate } from 'swr'
+import { showNotification } from '@/lib/utils/common'
 
 const permissionType = [
   {
@@ -59,13 +59,13 @@ const CreateVerifyCodeDialog: React.FC<Props> = (props) => {
     (_url, { arg }: { arg: any }) => createVerifyCode(arg),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Tạo mã xác minh thành công'))
+        showNotification('success', 'Tạo mã xác minh thành công')
         form.reset()
         mutate(props.swrKey)
         props.handleSetOpen(false)
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || 'Tạo mã xác minh thất bại'))
+        showNotification('error', error.message || 'Tạo mã xác minh thất bại')
       }
     }
   )

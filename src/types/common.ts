@@ -53,8 +53,9 @@ export type CertificateType = {
   studentName: string
   name: string
   date: string
-  certificateType: string
+  certificateType?: string
   signed: boolean
-  serialNumber: string
-  regNo: string
+  serialNumber?: string
+  regNo?: string
+  isDegree?: boolean
 }

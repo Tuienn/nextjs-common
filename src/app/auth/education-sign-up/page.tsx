@@ -9,13 +9,11 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import XrmSvg from '../../../../public/assets/svg/xrm.svg'
 import background from '../../../../public/assets/images/background.jpg'
-import { signIn } from '@/lib/auth/auth'
-import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 import { validateEmail, validateNoEmpty, validatePassword } from '@/lib/utils/validators'
-import { useRouter } from 'next/navigation'
+
 import { requestEducationSignUp } from '@/lib/api/auth'
-import { toastNoti } from '@/lib/utils/common'
+import { showNotification } from '@/lib/utils/common'
 import useSWRMutation from 'swr/mutation'
 const formSchma = z.object({
   email: validateEmail,
@@ -25,7 +23,6 @@ const formSchma = z.object({
 })
 
 const EducationSignUpPage = () => {
-  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchma>>({
     resolver: zodResolver(formSchma),
     defaultValues: {
@@ -41,10 +38,10 @@ const EducationSignUpPage = () => {
     (_, { arg }: { arg: any }) => requestEducationSignUp(arg.email, arg.name, arg.code, arg.address),
     {
       onSuccess: (data) => {
-        toast(toastNoti('success', data.message || 'Gửi yêu cầu đăng ký thành công'))
+        showNotification('success', data.message || 'Gửi yêu cầu đăng ký thành công')
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || error.error || 'Gửi yêu cầu đăng ký thất bại'))
+        showNotification('error', error.message || error.error || 'Gửi yêu cầu đăng ký thất bại')
       }
     }
   )

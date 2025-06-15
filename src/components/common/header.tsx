@@ -33,7 +33,7 @@ const educationAdminPages: { title: string; href: string }[] = [
   //   href: '/education-admin/score-management'
   // },
   {
-    title: 'Quản lý chứng chỉ',
+    title: 'Văn bằng & Chứng chỉ',
     href: '/education-admin/certificate-management'
   }
 ]
@@ -48,7 +48,7 @@ const studentPages: { title: string; href: string }[] = [
   //   href: '/student/score'
   // },
   {
-    title: 'Thông tin chứng chỉ',
+    title: 'Văn bằng - chứng chỉ',
     href: '/student/certificate'
   }
 ]

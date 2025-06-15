@@ -4,13 +4,14 @@ import PageHeader from '@/components/common/page-header'
 import TableList from '@/components/role/education-admin/table-list'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { approveUniversity, getUniversityList, rejectUniversity } from '@/lib/api/university'
 import { cn } from '@/lib/utils'
-import { toastNoti } from '@/lib/utils/common'
+
 import { PackageCheckIcon, PackageXIcon } from 'lucide-react'
 import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
+import { showNotification } from '@/lib/utils/common'
 
 const EducationManagementPage = () => {
   const queryUniversityList = useSWR('university-list', () => getUniversityList())
@@ -19,11 +20,11 @@ const EducationManagementPage = () => {
     (_, { arg }: { arg: string }) => approveUniversity(arg),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Duyệt trường thành công'))
+        showNotification('success', 'Duyệt trường thành công')
         queryUniversityList.mutate()
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || 'Duyệt trường thất bại'))
+        showNotification('error', error.message || 'Duyệt trường thất bại')
       }
     }
   )
@@ -32,11 +33,11 @@ const EducationManagementPage = () => {
     (_, { arg }: { arg: string }) => rejectUniversity(arg),
     {
       onSuccess: () => {
-        toast(toastNoti('success', 'Từ chối trường thành công'))
+        showNotification('success', 'Từ chối trường thành công')
         queryUniversityList.mutate()
       },
       onError: (error) => {
-        toast(toastNoti('error', error.message || 'Từ chối trường thất bại'))
+        showNotification('error', error.message || 'Từ chối trường thất bại')
       }
     }
   )

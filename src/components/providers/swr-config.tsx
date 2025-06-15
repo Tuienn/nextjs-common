@@ -8,7 +8,7 @@ const SWRConfig = ({ children }: { children: React.ReactNode }) => {
     <SWRConfigNext
       value={{
         loadingTimeout: 5000,
-        errorRetryCount: 1,
+        shouldRetryOnError: false,
         revalidateOnFocus: false,
         fetcher: (url) => apiService('GET', url)
       }}

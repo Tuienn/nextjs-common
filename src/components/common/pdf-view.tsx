@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react'
+import { Separator } from '../ui/separator'
 
 interface Props {
   url: string | undefined
@@ -19,7 +20,21 @@ const PDFView: React.FC<Props> = (props) => {
         <p className='text-center text-sm text-gray-500'>Đang tải file PDF...</p>
       </div>
     )
-  return <iframe src={props.url} className='h-full w-full' />
+  const iframUrl = URL.createObjectURL(props.url as unknown as Blob)
+
+  //   useEffect(() => {
+  //     return () => {
+  //       console.log('component unmount')
+
+  //       URL.revokeObjectURL(iframUrl)
+  //     }
+  //   }, [iframUrl])
+
+  return (
+    <div className='h-full min-h-[500px] w-full'>
+      <iframe src={iframUrl} className='h-full w-full' />
+    </div>
+  )
 }
 
 export default PDFView

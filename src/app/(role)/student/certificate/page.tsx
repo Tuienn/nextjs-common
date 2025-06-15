@@ -1,17 +1,16 @@
 'use client'
-import CertificateBlankButton from '@/components/common/certificate-blank-button'
-import CertificateView from '@/components/common/certificate-view'
 import PageHeader from '@/components/common/page-header'
 import CommonPagination from '@/components/common/pagination'
 import TableList from '@/components/role/education-admin/table-list'
 import CreateVerifyCodeDialog from '@/components/role/student/create-verify-code'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogTitle, DialogContent, DialogTrigger, DialogHeader, DialogFooter } from '@/components/ui/dialog'
 import { PAGE_SIZE } from '@/constants/common'
-import { getCertificateDataStudent, getCertificateFile, getVerifyCodeList } from '@/lib/api/certificate'
-import { CertificateType } from '@/types/common'
+
+import { getVerifyCodeList } from '@/lib/api/certificate'
+
 import { EyeIcon, PackagePlusIcon } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 import useSWR from 'swr'
 
@@ -19,29 +18,17 @@ const StudentCertificatePage = () => {
   const [page, setPage] = useState(1)
   const queryVerifyCodeList = useSWR('verifyCode-list' + page, () => getVerifyCodeList({ page, page_size: PAGE_SIZE }))
   const [openCreateVerifyCode, setOpenCreateVerifyCode] = useState(false)
-  const queryCertificateDataStudent = useSWR('certificate-data-student', getCertificateDataStudent)
 
   return (
     <>
       <PageHeader
-        title='Thông tin chứng chỉ'
+        title='Văn bằng - chứng chỉ'
         extra={[
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant={'outline'}>
-                <EyeIcon /> <span className='hidden sm:block'>Xem chứng chỉ</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Thông tin chứng chỉ</DialogTitle>
-              </DialogHeader>
-              <CertificateView data={queryCertificateDataStudent.data as CertificateType} />
-              <DialogFooter>
-                <CertificateBlankButton isIcon={false} action={() => getCertificateFile('my-file')} />
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>,
+          <Link href={'/student/certificate/detail'}>
+            <Button variant={'outline'}>
+              <EyeIcon /> <span className='hidden sm:block'>Xem chứng chỉ</span>
+            </Button>
+          </Link>,
           <Button onClick={() => setOpenCreateVerifyCode(true)}>
             <PackagePlusIcon />
             <span className='hidden sm:block'>Tạo mã xác minh</span>
