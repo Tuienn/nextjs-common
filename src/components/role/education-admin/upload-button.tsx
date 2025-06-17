@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { useRef } from 'react'
+import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { UploadIcon } from 'lucide-react'
 
 interface Props {
@@ -10,13 +10,22 @@ interface Props {
   icon?: React.ReactNode
 }
 
-const UploadButton: React.FC<Props> = (props) => {
+export interface UploadButtonRef {
+  triggerUpload: () => void
+}
+
+const UploadButton = forwardRef<UploadButtonRef, Props>((props, ref) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
+
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click()
     }
   }
+
+  useImperativeHandle(ref, () => ({
+    triggerUpload: handleButtonClick
+  }))
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
@@ -60,6 +69,8 @@ const UploadButton: React.FC<Props> = (props) => {
       </Button>
     </>
   )
-}
+})
+
+UploadButton.displayName = 'UploadButton'
 
 export default UploadButton

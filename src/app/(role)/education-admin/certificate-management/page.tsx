@@ -2,21 +2,33 @@
 import PageHeader from '@/components/common/page-header'
 import CommonPagination from '@/components/common/pagination'
 import { UseData } from '@/components/providers/data-provider'
-import CertificateActionButton from '@/components/role/education-admin/certificate-action-button'
 import DetailDialog from '@/components/role/education-admin/detail-dialog'
 import Filter from '@/components/role/education-admin/filter'
 import TableList from '@/components/role/education-admin/table-list'
-import UploadButton from '@/components/role/education-admin/upload-button'
+import UploadButton, { UploadButtonRef } from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CERTIFICATE_TYPE_OPTIONS, PAGE_SIZE } from '@/constants/common'
 
 import {
   createCertificate,
-  getCertificateDataById,
   getCertificateList,
   importCertificateExcel,
-  uploadCertificate
+  uploadCertificate,
+  uploadDegree
 } from '@/lib/api/certificate'
 import { searchStudentByCode } from '@/lib/api/student'
 import { showNotification } from '@/lib/utils/common'
@@ -24,7 +36,7 @@ import { formatCertificate, formatFacultyOptions } from '@/lib/utils/format-api'
 import { validateNoEmpty } from '@/lib/utils/validators'
 import { EyeIcon, FileUpIcon, PlusIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { useCallback } from 'react'
 import useSWR from 'swr'
@@ -32,6 +44,10 @@ import useSWRMutation from 'swr/mutation'
 
 const CertificateManagementPage = () => {
   const [idDetail, setIdDetail] = useState<string | null | undefined>(undefined)
+  const [typeUpload, setTypeUpload] = useState<'degree' | 'certificate'>('degree')
+  const [certificateName, setCertificateName] = useState<string>('')
+  const uploadButtonRef = useRef<UploadButtonRef>(null)
+  const [openUploadDialog, setOpenUploadDialog] = useState(false)
 
   const [filter, setFilter] = useState<any>({})
   const handleCloseDialog = useCallback(() => {
@@ -60,19 +76,42 @@ const CertificateManagementPage = () => {
     }
   })
 
-  const mutateUploadCertificateFile = useSWRMutation(
+  const mutateUploadDegreeFile = useSWRMutation(
     'upload-certificate',
-    (_, { arg }: { arg: FormData }) => uploadCertificate(arg),
+    (_, { arg }: { arg: FormData }) => uploadDegree(arg),
     {
       onSuccess: () => {
         showNotification('success', 'Tải tệp lên thành công')
         queryCertificates.mutate()
+        setOpenUploadDialog(false)
+        setCertificateName('')
+        setTypeUpload('degree')
       },
       onError: (error) => {
         showNotification('error', error.message || 'Lỗi khi tải tệp lên')
       }
     }
   )
+  const mutateUploadCertificateFile = useSWRMutation(
+    'upload-certificate',
+    (_, { arg }: { arg: FormData }) => uploadCertificate(arg, certificateName),
+    {
+      onSuccess: () => {
+        showNotification('success', 'Tải tệp lên thành công')
+        queryCertificates.mutate()
+        setOpenUploadDialog(false)
+        setCertificateName('')
+        setTypeUpload('certificate')
+      },
+      onError: (error) => {
+        showNotification('error', error.message || 'Lỗi khi tải tệp lên')
+      }
+    }
+  )
+
+  const handleUploadPDF = useCallback(() => {
+    uploadButtonRef.current?.triggerUpload()
+  }, [uploadButtonRef])
 
   const mutateImportCertificateExcel = useSWRMutation(
     'import-certificate-excel',
@@ -92,9 +131,13 @@ const CertificateManagementPage = () => {
 
   const handleUpload = useCallback(
     (file: FormData) => {
-      mutateUploadCertificateFile.trigger(file)
+      if (typeUpload === 'degree') {
+        mutateUploadDegreeFile.trigger(file)
+      } else {
+        mutateUploadCertificateFile.trigger(file)
+      }
     },
-    [mutateUploadCertificateFile]
+    [mutateUploadCertificateFile, mutateUploadDegreeFile, typeUpload]
   )
 
   const handleImportCertificateExcel = useCallback(
@@ -123,14 +166,63 @@ const CertificateManagementPage = () => {
             <PlusIcon />
             <span className='hidden sm:block'>Tạo mới</span>
           </Button>,
-          <UploadButton
-            handleUpload={handleUpload}
-            loading={mutateUploadCertificateFile.isMutating}
-            title={'Tải tệp (PDF)'}
-            icon={<FileUpIcon />}
-          />
+          <Dialog open={openUploadDialog} onOpenChange={setOpenUploadDialog}>
+            <DialogTrigger>
+              <Button variant={'outline'} title='Có hỗ trợ tải nhiều tệp cùng lúc'>
+                <FileUpIcon />
+                <span className='hidden sm:block'>Tải tệp (PDF)</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Tải tệp PDF chứng chỉ/văn bằng</DialogTitle>
+                <DialogDescription>
+                  Nếu tải văn bằng thì tên tệp là <span className='font-bold'>số hiệu văn bằng</span>, nếu tải chứng chỉ
+                  thì tên tệp là <span className='font-bold'>mã sinh viên</span>
+                </DialogDescription>
+              </DialogHeader>
+              <Label>Chọn loại</Label>
+              <Select defaultValue='degree' onValueChange={(value) => setTypeUpload(value as 'degree' | 'certificate')}>
+                <SelectTrigger>
+                  <SelectValue placeholder='Chọn loại' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='degree'>Văn bằng</SelectItem>
+                  <SelectItem value='certificate'>Chứng chỉ</SelectItem>
+                </SelectContent>
+              </Select>
+              {typeUpload === 'certificate' && (
+                <>
+                  <Label>Tên tệp</Label>
+                  <Input
+                    value={certificateName}
+                    onChange={(e) => setCertificateName(e.target.value)}
+                    placeholder='Nhập tên tệp'
+                  />
+                </>
+              )}
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant={'outline'}>Hủy bỏ</Button>
+                </DialogClose>
+                <Button
+                  onClick={handleUploadPDF}
+                  disabled={mutateUploadDegreeFile.isMutating || mutateUploadCertificateFile.isMutating}
+                >
+                  Tải tệp
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         ]}
       />
+      <div className='hidden'>
+        <UploadButton
+          handleUpload={handleUpload}
+          loading={mutateUploadDegreeFile.isMutating || mutateUploadCertificateFile.isMutating}
+          ref={uploadButtonRef}
+        />
+      </div>
       <Filter
         children={[
           {

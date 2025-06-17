@@ -16,7 +16,12 @@ export const createCertificate = async (data: any) => {
   return res
 }
 
-export const uploadCertificate = async (data: any) => {
+export const uploadCertificate = async (data: any, name: string) => {
+  const res = await apiService('POST', `certificates/upload-pdf?is_degree=false&name=${name}`, data)
+  return res
+}
+
+export const uploadDegree = async (data: any) => {
   const res = await apiService('POST', 'certificates/upload-pdf?is_degree=true', data)
   return res
 }
