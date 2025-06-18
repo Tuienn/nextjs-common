@@ -3,7 +3,7 @@ import XrmSvg from '../../../public/assets/svg/xrm.svg'
 import ThemeSwitch from './theme-switch'
 import Image from 'next/image'
 import SignOutButton from './signout-button'
-import { LogIn, MenuIcon } from 'lucide-react'
+import { LogIn, LogInIcon, MenuIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet'
 import {
   NavigationMenu,
@@ -122,9 +122,11 @@ const Header: React.FC<Props> = (props) => {
               {props.role !== 'admin' && <ChangePassButton className='hidden md:flex' />}
             </>
           ) : (
-            <Button>
-              <Link href='/auth/sign-in'>Đăng nhập</Link>
-            </Button>
+            <Link href='/auth/sign-in'>
+              <Button>
+                <LogInIcon /> <span className='hidden md:block'>Đăng nhập</span>
+              </Button>
+            </Link>
           )}
           <ThemeSwitch />
         </div>

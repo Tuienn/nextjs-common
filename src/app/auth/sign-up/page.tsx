@@ -25,6 +25,7 @@ import { registerAccount, sendOTP, verifyOTP } from '@/lib/api/auth'
 import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import { signIn } from '@/lib/auth/auth'
 import { useRouter } from 'next/navigation'
+import { ArrowLeft, Check, Send, UserPlus } from 'lucide-react'
 const formPersonalEmailSchma = z.object({
   email: validateEmail,
   password: validatePassword
@@ -122,7 +123,7 @@ const AuthPage = () => {
                 disabled={!inputEmail.includes('edu.vn')}
                 isLoading={mutateSendOTP.isMutating}
               >
-                Gửi mã OTP
+                <Send /> Gửi mã OTP
               </Button>
             </div>
           </div>
@@ -145,13 +146,29 @@ const AuthPage = () => {
             <p className='mt-2 text-sm text-gray-500'>
               Mã OTP được gửi đến email <b>{inputEmail}</b>
             </p>
+            <div className='my-4 flex w-full gap-4'>
+              <Button
+                variant={'outline'}
+                className='flex-1'
+                onClick={() => {
+                  setIsOTPSended(false)
+                  setIsOTPVerified(false)
+                }}
+                type='button'
+              >
+                <ArrowLeft /> Quay lại
+              </Button>
+              <Button className='flex-1' onClick={() => mutateSendOTP.trigger()} isLoading={mutateSendOTP.isMutating}>
+                <Send /> Gửi lại mã OTP
+              </Button>
+            </div>
             <Button
-              className='mt-4 w-full'
+              className='w-full'
               onClick={() => mutateVerifyOTP.trigger()}
               disabled={inputOTP.length !== 6}
               isLoading={mutateVerifyOTP.isMutating}
             >
-              Xác thực
+              <Check /> Xác thực
             </Button>
           </div>
 
@@ -177,19 +194,8 @@ const AuthPage = () => {
                 placeholder='VD: abc123'
                 setting={{ input: { type: 'password' } }}
               />
-              <Button
-                variant={'outline'}
-                className='w-full'
-                onClick={() => {
-                  setIsOTPSended(false)
-                  setIsOTPVerified(false)
-                }}
-                type='button'
-              >
-                Gửi lại mã OTP
-              </Button>
-              <Button type='submit' className='w-full'>
-                Đăng ký
+              <Button type='submit' className='w-full' isLoading={formPersonalEmail.formState.isSubmitting}>
+                <UserPlus /> Đăng ký
               </Button>
             </form>
           </Form>

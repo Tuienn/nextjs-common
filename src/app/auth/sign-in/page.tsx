@@ -14,6 +14,7 @@ import { showNotification } from '@/lib/utils/common'
 import Link from 'next/link'
 import { validateEmail, validatePassword } from '@/lib/utils/validators'
 import { useRouter } from 'next/navigation'
+import { LogInIcon, SchoolIcon, User } from 'lucide-react'
 const formSchma = z.object({
   email: validateEmail,
   password: validatePassword
@@ -71,8 +72,8 @@ const SignInPage = () => {
                 placeholder='Nhập mật khẩu'
                 setting={{ input: { type: 'password' } }}
               />
-              <Button type='submit' className='w-full'>
-                Đăng nhập
+              <Button type='submit' className='w-full' isLoading={form.formState.isSubmitting}>
+                <LogInIcon /> Đăng nhập
               </Button>
             </form>
           </Form>
@@ -87,12 +88,19 @@ const SignInPage = () => {
             Bạn chưa có tài khoản? <span className='underline'>Đăng ký với vai trò</span>
           </p>
           <div className='flex flex-col gap-2 md:flex-row'>
-            <Button className='flex-1' variant={'outline'}>
-              <Link href='/auth/sign-up'>Sinh viên</Link>
-            </Button>
-            <Button className='flex-1' variant={'outline'}>
-              <Link href='/auth/education-sign-up'>Quản lý đào tạo</Link>
-            </Button>
+            <Link className='flex-1' href='/auth/sign-up'>
+              <Button variant={'outline'} className='w-full'>
+                {' '}
+                <User /> Sinh viên
+              </Button>
+            </Link>
+            <Link className='flex-1' href='/auth/education-sign-up'>
+              <Button variant={'outline'} className='w-full'>
+                {' '}
+                <SchoolIcon />
+                Quản lý đào tạo
+              </Button>
+            </Link>
           </div>
         </DialogContent>
       </Dialog>
