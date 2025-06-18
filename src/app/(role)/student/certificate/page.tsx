@@ -6,9 +6,7 @@ import CreateVerifyCodeDialog from '@/components/role/student/create-verify-code
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PAGE_SIZE } from '@/constants/common'
-
 import { getVerifyCodeList } from '@/lib/api/certificate'
-
 import { EyeIcon, PackagePlusIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -24,12 +22,12 @@ const StudentCertificatePage = () => {
       <PageHeader
         title='Văn bằng - chứng chỉ'
         extra={[
-          <Link href={'/student/certificate/detail'}>
+          <Link key='view-certificate' href={'/student/certificate/detail'}>
             <Button variant={'outline'}>
               <EyeIcon /> <span className='hidden sm:block'>Xem chứng chỉ</span>
             </Button>
           </Link>,
-          <Button onClick={() => setOpenCreateVerifyCode(true)}>
+          <Button key='create-verify-code' onClick={() => setOpenCreateVerifyCode(true)}>
             <PackagePlusIcon />
             <span className='hidden sm:block'>Tạo mã xác minh</span>
           </Button>
@@ -37,7 +35,7 @@ const StudentCertificatePage = () => {
       />
 
       <TableList
-        children={[
+        items={[
           { header: 'Mã xác minh', value: 'verifyCode', className: 'min-w-[120px] font-semibold text-blue-500' },
           { header: 'Thời gian tạo', value: 'createdAt', className: 'min-w-[150px]' },
           { header: 'Hết hạn sau (phút)', value: 'expiredAfter', className: 'min-w-[100px]' },

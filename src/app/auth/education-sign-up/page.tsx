@@ -10,7 +10,7 @@ import Image from 'next/image'
 import XrmSvg from '../../../../public/assets/svg/xrm.svg'
 import background from '../../../../public/assets/images/background.jpg'
 import Link from 'next/link'
-import { validateEmail, validateNoEmpty, validatePassword } from '@/lib/utils/validators'
+import { validateEmail, validateNoEmpty } from '@/lib/utils/validators'
 
 import { requestEducationSignUp } from '@/lib/api/auth'
 import { showNotification } from '@/lib/utils/common'

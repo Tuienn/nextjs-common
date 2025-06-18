@@ -46,7 +46,7 @@ const ChangePassButton: React.FC<Props> = (props) => {
         mode={open ? 'update' : undefined}
         handleClose={() => setOpen(false)}
         handleSubmit={handleSubmit}
-        children={[
+        items={[
           {
             type: 'input',
             name: 'oldPassword',

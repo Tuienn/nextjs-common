@@ -84,14 +84,14 @@ const FacultyManagementPage = () => {
       <PageHeader
         title='Quản lý khoa'
         extra={[
-          <Button onClick={() => setIdDetail(null)}>
+          <Button key='create-faculty' onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Thêm khoa</span>
           </Button>
         ]}
       />
       {/* <Filter
-        children={[
+        items={[
           {
             type: 'input',
             placeholder: 'Nhập mã khoa',
@@ -107,7 +107,7 @@ const FacultyManagementPage = () => {
       /> */}
       <TableList
         data={data}
-        children={[
+        items={[
           { header: 'Mã khoa', value: 'code', className: 'text-blue-500 font-semibold min-w-[100px]' },
           { header: 'Tên khoa', value: 'name', className: 'min-w-[200px]' },
           {
@@ -120,7 +120,7 @@ const FacultyManagementPage = () => {
         ]}
       />
       <DetailDialog
-        children={[
+        items={[
           {
             type: 'input',
             placeholder: 'Nhập mã khoa',

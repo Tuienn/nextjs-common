@@ -7,7 +7,7 @@ interface ViewItemProps {
 }
 
 interface Props {
-  children: ViewItemProps[]
+  items: ViewItemProps[]
   title: any
   description?: string
 }
@@ -34,7 +34,7 @@ const DecriptionView: React.FC<Props> = (props) => {
         <CardDescription>{props.description}</CardDescription>
       </CardHeader>
       <CardContent className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-        {props.children.map((item, index) => (
+        {props.items.map((item, index) => (
           <ViewItem key={index} {...item} />
         ))}
       </CardContent>

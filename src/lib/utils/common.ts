@@ -1,6 +1,6 @@
-import { format } from 'date-fns'
-import { toast, ToasterProps } from 'sonner'
+import { ExternalToast, toast } from 'sonner'
 
+// eslint-disable-next-line no-unused-vars
 export function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null
 
@@ -27,7 +27,7 @@ export const queryString = (slashParams: (string | number)[], params?: any) => {
 export const showNotification = (
   type: 'success' | 'error' | 'info' | 'warning' | 'message',
   description: string,
-  setting?: ToasterProps
+  setting?: ExternalToast
 ) => {
   return toast[type]('Thông báo', {
     description:
@@ -49,9 +49,29 @@ export const showNotification = (
   })
 }
 
-export const showMessage = (description: string, setting?: ToasterProps) => {
+export const showMessage = (description: string, setting?: ExternalToast) => {
   return toast(description, {
     position: 'top-center',
     ...setting
   })
+}
+
+export const formatResponseImportExcel = (
+  data: any
+): {
+  success: number[]
+  error: { title: string; row: number[] }[]
+} => {
+  return {
+    success: data.data.success?.map((item: any) => item.row),
+    error: Object.values(
+      data.data.error?.reduce((acc: Record<string, { title: string; row: number[] }>, item: any) => {
+        if (!acc[item.error]) {
+          acc[item.error] = { title: item.error, row: [] }
+        }
+        acc[item.error].row.push(item.row)
+        return acc
+      }, {})
+    )
+  }
 }

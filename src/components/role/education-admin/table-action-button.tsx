@@ -13,11 +13,13 @@ import {
 import { TrashIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PencilIcon } from 'lucide-react'
+import { Dispatch, SetStateAction } from 'react'
 
 interface Props {
   id: string
+  // eslint-disable-next-line no-unused-vars
   handleDelete: (id: string) => void
-  handleSetIdDetail: (id: string) => void
+  handleSetIdDetail: Dispatch<SetStateAction<string | null | undefined>>
 }
 
 const TableActionButton: React.FC<Props> = (props) => {

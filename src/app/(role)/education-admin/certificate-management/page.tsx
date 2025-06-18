@@ -31,7 +31,7 @@ import {
   uploadDegree
 } from '@/lib/api/certificate'
 import { searchStudentByCode } from '@/lib/api/student'
-import { showNotification } from '@/lib/utils/common'
+import { formatResponseImportExcel, showNotification } from '@/lib/utils/common'
 import { formatCertificate, formatFacultyOptions } from '@/lib/utils/format-api'
 import { validateNoEmpty } from '@/lib/utils/validators'
 import { EyeIcon, FileUpIcon, PlusIcon } from 'lucide-react'
@@ -118,9 +118,29 @@ const CertificateManagementPage = () => {
     (_, { arg }: { arg: FormData }) => importCertificateExcel(arg),
     {
       onSuccess: (data) => {
-        console.log('🚀 ~ onSuccess: ~ data:', data)
+        const formatData = formatResponseImportExcel(data)
 
-        showNotification('success', 'Nhập tệp excel thành công')
+        if (data.error_count === 0) {
+          showNotification('success', `Thêm ${data.success_count} văn bằng/chứng chỉ thành công`)
+          queryCertificates.mutate()
+          return
+        }
+
+        if (data.success_count === 0) {
+          formatData.error.forEach((item) => {
+            showNotification('error', `Văn bằng/chứng chỉ hàng thứ ${item.row.join(', ')} có lỗi: "${item.title}"`)
+          })
+          return
+        }
+
+        formatData.error.forEach((item) => {
+          showNotification('error', `Văn bằng/chứng chỉ hàng thứ ${item.row.join(', ')} có lỗi: "${item.title}" `)
+        })
+
+        showNotification(
+          'success',
+          `Văn bằng/chứng chỉ hàng thứ ${formatData.success.join(', ')} đã được thêm thành công`
+        )
         queryCertificates.mutate()
       },
       onError: (error) => {
@@ -147,9 +167,12 @@ const CertificateManagementPage = () => {
     [mutateImportCertificateExcel]
   )
 
-  const handleCreateCertificate = useCallback((data: any) => {
-    mutateCreateCertificate.trigger(data)
-  }, [])
+  const handleCreateCertificate = useCallback(
+    (data: any) => {
+      mutateCreateCertificate.trigger(data)
+    },
+    [mutateCreateCertificate]
+  )
 
   return (
     <>
@@ -157,16 +180,17 @@ const CertificateManagementPage = () => {
         title='Văn bằng & Chứng chỉ'
         extra={[
           <UploadButton
+            key='upload-excel'
             handleUpload={handleImportCertificateExcel}
             loading={mutateImportCertificateExcel.isMutating}
             title={'Tải tệp (Excel)'}
             icon={<FileUpIcon />}
           />,
-          <Button onClick={() => setIdDetail(null)}>
+          <Button key='create-new' onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Tạo mới</span>
           </Button>,
-          <Dialog open={openUploadDialog} onOpenChange={setOpenUploadDialog}>
+          <Dialog key='upload-pdf' open={openUploadDialog} onOpenChange={setOpenUploadDialog}>
             <DialogTrigger>
               <Button variant={'outline'} title='Có hỗ trợ tải nhiều tệp cùng lúc'>
                 <FileUpIcon />
@@ -224,7 +248,7 @@ const CertificateManagementPage = () => {
         />
       </div>
       <Filter
-        children={[
+        items={[
           {
             type: 'query_select',
             placeholder: 'Nhập và chọn mã sinh viên',
@@ -297,7 +321,7 @@ const CertificateManagementPage = () => {
         handleSetFilter={setFilter}
       />
       <TableList
-        children={[
+        items={[
           { header: 'Mã SV', value: 'studentCode', className: 'min-w-[80px] font-semibold text-blue-500' },
           { header: 'Họ và tên', value: 'studentName', className: 'min-w-[200px]' },
           { header: 'Tên khoa', value: 'facultyName', className: 'min-w-[150px]' },
@@ -348,7 +372,7 @@ const CertificateManagementPage = () => {
         }}
       />
       <DetailDialog
-        children={[
+        items={[
           {
             type: 'query_select',
             placeholder: 'Nhập và chọn mã sinh viên',

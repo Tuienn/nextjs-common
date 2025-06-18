@@ -20,7 +20,7 @@ import {
   searchStudent,
   updateStudent
 } from '@/lib/api/student'
-import { showNotification } from '@/lib/utils/common'
+import { formatResponseImportExcel, showNotification } from '@/lib/utils/common'
 import { formatFacultyOptions, formatStudent } from '@/lib/utils/format-api'
 
 import { validateAcademicEmail } from '@/lib/utils/validators'
@@ -30,7 +30,7 @@ import useSWR from 'swr'
 import useSWRMutation from 'swr/mutation'
 import z from 'zod'
 
-const StudentManagementPage = () => {
+const StudentManagementPage: React.FC = () => {
   const [idDetail, setIdDetail] = useState<string | null | undefined>(undefined)
 
   const [filter, setFilter] = useState<any>({})
@@ -98,18 +98,38 @@ const StudentManagementPage = () => {
 
   const mutateImportExcel = useSWRMutation('import-excel', (_key, { arg }: { arg: any }) => importExcel(arg), {
     onSuccess: (data) => {
-      console.log('🚀 ~ mutateImportExcel ~ data:', data)
+      const formatData = formatResponseImportExcel(data)
 
-      showNotification('success', 'Tải tệp lên thành công')
+      if (data.error_count === 0) {
+        showNotification('success', `Thêm ${data.success_count} sinh viên thành công`)
+        queryStudents.mutate()
+        return
+      }
+
+      if (data.success_count === 0) {
+        formatData.error.forEach((item) => {
+          showNotification('error', `Sinh viên hàng thứ ${item.row.join(', ')} có lỗi: "${item.title}"`)
+        })
+        return
+      }
+
+      formatData.error.forEach((item) => {
+        showNotification('error', `Sinh viên hàng thứ ${item.row.join(', ')} có lỗi: "${item.title}" `)
+      })
+
+      showNotification('success', `Sinh viên hàng thứ ${formatData.success.join(', ')} đã được thêm thành công`)
       queryStudents.mutate()
     },
     onError: (error) => {
       showNotification('error', error.message || 'Lỗi khi tải tệp lên')
     }
   })
-  const handleDelete = useCallback((id: string) => {
-    mutateDeleteStudent.trigger(id)
-  }, [])
+  const handleDelete = useCallback(
+    (id: string) => {
+      mutateDeleteStudent.trigger(id)
+    },
+    [mutateDeleteStudent]
+  )
 
   const handleSubmit = useCallback(
     (data: any) => {
@@ -119,7 +139,7 @@ const StudentManagementPage = () => {
         mutateCreateStudent.trigger(data)
       }
     },
-    [idDetail]
+    [idDetail, mutateUpdateStudent, mutateCreateStudent]
   )
 
   const handleUpload = useCallback(
@@ -130,12 +150,12 @@ const StudentManagementPage = () => {
   )
 
   return (
-    <>
+    <div>
       <PageHeader
         title='Quản lý sinh viên'
         extra={[
-          <UploadButton handleUpload={handleUpload} loading={mutateImportExcel.isMutating} />,
-          <Button onClick={() => setIdDetail(null)}>
+          <UploadButton key='upload-excel' handleUpload={handleUpload} loading={mutateImportExcel.isMutating} />,
+          <Button key='create-student' onClick={() => setIdDetail(null)}>
             <PlusIcon />
             <span className='hidden sm:block'>Thêm sinh viên</span>
           </Button>
@@ -144,7 +164,7 @@ const StudentManagementPage = () => {
 
       <Filter
         handleSetFilter={setFilter}
-        children={[
+        items={[
           { type: 'input', name: 'code', placeholder: 'Nhập mã sinh viên' },
           {
             type: 'input',
@@ -195,7 +215,7 @@ const StudentManagementPage = () => {
       />
       <TableList
         data={queryStudents.data?.data || []}
-        children={[
+        items={[
           { header: 'Mã SV', value: 'code', className: 'min-w-[80px] font-semibold text-blue-500' },
           { header: 'Họ và tên', value: 'name', className: 'min-w-[200px]' },
           { header: 'Email', value: 'email', className: 'min-w-[200px]' },
@@ -228,7 +248,7 @@ const StudentManagementPage = () => {
         handleChangePage={handleChangePage}
       />
       <DetailDialog
-        children={[
+        items={[
           {
             type: 'input',
             label: 'Mã sinh viên',
@@ -314,7 +334,7 @@ const StudentManagementPage = () => {
         mode={idDetail ? 'update' : idDetail === undefined ? undefined : 'create'}
         handleClose={handleCloseDetailDialog}
       />
-    </>
+    </div>
   )
 }
 

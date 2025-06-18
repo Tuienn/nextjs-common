@@ -37,7 +37,7 @@ export default async function RootLayout({
         >
           <SWRConfig>
             {children}
-            <Toaster />
+            <Toaster expand={true} />
           </SWRConfig>
         </ThemeProvider>
       </body>

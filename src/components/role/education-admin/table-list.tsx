@@ -2,7 +2,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { PAGE_SIZE } from '@/constants/common'
 
 interface Props {
-  children: { className?: string; header: string; value: string; render?: (item: any) => React.ReactNode }[]
+  // eslint-disable-next-line no-unused-vars
+  items: { className?: string; header: string; value: string; render?: (item?: any) => React.ReactNode }[]
   data: any[]
   page?: number
   pageSize?: number
@@ -14,7 +15,7 @@ const TableList: React.FC<Props> = (props) => {
       <TableHeader>
         <TableRow>
           <TableHead>STT</TableHead>
-          {props.children.map((header, index) => (
+          {props.items.map((header, index) => (
             <TableHead key={index}>{header.header}</TableHead>
           ))}
         </TableRow>
@@ -23,7 +24,7 @@ const TableList: React.FC<Props> = (props) => {
         {props.data.map((item, index) => (
           <TableRow key={index}>
             <TableCell>{index + 1 + ((props.page ?? 1) - 1) * (props.pageSize ?? PAGE_SIZE)}</TableCell>
-            {props.children.map((child, index) => (
+            {props.items.map((child, index) => (
               <TableCell key={index}>
                 <div className={`${child.className} truncate`}>
                   {child.render ? child.render(item) : item[child.value]}

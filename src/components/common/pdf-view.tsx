@@ -1,5 +1,4 @@
 import { Loader2 } from 'lucide-react'
-import { Separator } from '../ui/separator'
 
 interface Props {
   url: string | undefined

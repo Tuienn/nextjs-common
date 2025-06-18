@@ -3,7 +3,7 @@ import XrmSvg from '../../../public/assets/svg/xrm.svg'
 import ThemeSwitch from './theme-switch'
 import Image from 'next/image'
 import SignOutButton from './signout-button'
-import { LogIn, LogInIcon, MenuIcon } from 'lucide-react'
+import { LogInIcon, MenuIcon } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet'
 import {
   NavigationMenu,

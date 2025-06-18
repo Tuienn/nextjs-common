@@ -11,6 +11,7 @@ import {
 interface Props {
   page: number
   totalPage: number
+  // eslint-disable-next-line no-unused-vars
   handleChangePage: (page: number) => void
 }
 

@@ -4,6 +4,7 @@ import { useRef, forwardRef, useImperativeHandle } from 'react'
 import { UploadIcon } from 'lucide-react'
 
 interface Props {
+  // eslint-disable-next-line no-unused-vars
   handleUpload: (file: FormData) => void
   loading: boolean | false
   title?: string

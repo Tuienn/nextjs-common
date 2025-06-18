@@ -1,4 +1,3 @@
-import { CertificateType } from '@/types/common'
 import { format } from 'date-fns'
 
 export const formatStudent = (data: any, isSendToServer: boolean = false) => {

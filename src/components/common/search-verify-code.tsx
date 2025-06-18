@@ -7,13 +7,10 @@ import { useState } from 'react'
 import useSWRMutation from 'swr/mutation'
 
 import { verifyCodeDataforGuest } from '@/lib/api/certificate'
-import UseBreakpoint from '@/lib/hooks/use-breakpoint'
 import { showNotification } from '@/lib/utils/common'
 import { PackageSearch } from 'lucide-react'
 
 const SearchVerifyCode = () => {
-  const { md } = UseBreakpoint()
-
   const [verifyCode, setVerifyCode] = useState('')
   const mutateDataVerifyCode = useSWRMutation(
     'verify-code',

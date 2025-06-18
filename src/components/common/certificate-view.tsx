@@ -112,10 +112,10 @@ const CertificateView: React.FC<Props> = (props) => {
   ]
 
   return (
-    <>
+    <div>
       <DecriptionView
         title={queryData.data?.name || 'Không có dữ liệu'}
-        children={isDegree ? degreeItems : certificateItems}
+        items={isDegree ? degreeItems : certificateItems}
         description={`Thông tin chi tiết về ${isDegree ? 'văn bằng' : 'chứng chỉ'}`}
       />
       {queryFile.data ? (
@@ -132,7 +132,7 @@ const CertificateView: React.FC<Props> = (props) => {
       ) : (
         <p className='mt-4 text-center text-red-500'>Không có tệp PDF</p>
       )}
-    </>
+    </div>
   )
 }
 

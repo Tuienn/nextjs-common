@@ -2,7 +2,7 @@
 
 import { getFacultyList } from '@/lib/api/faculty'
 import React, { createContext, useContext, ReactNode } from 'react'
-import useSWR, { mutate, useSWRConfig } from 'swr'
+import useSWR, { mutate } from 'swr'
 
 type Faculty = {
   code: string

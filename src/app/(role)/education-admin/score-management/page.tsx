@@ -9,13 +9,15 @@ import UploadButton from '@/components/role/education-admin/upload-button'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { PlusIcon, SeparatorVertical } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { z } from 'zod'
 
 const ScoreManagementPage = () => {
   const [idDetail, setIdDetail] = useState<string | undefined | null>(undefined)
   const [filter, setFilter] = useState<any>({})
+  console.log('🚀 ~ ScoreManagementPage ~ filter:', filter)
+
   const handleDelete = (id: string) => {
     console.log(id)
   }
@@ -146,15 +148,12 @@ const ScoreManagementPage = () => {
           </Button>
         </div>
       </div>
-      <Filter
-        children={[{ type: 'input', placeholder: 'Nhập mã sinh viên', name: 'code' }]}
-        handleSetFilter={setFilter}
-      />
+      <Filter items={[{ type: 'input', placeholder: 'Nhập mã sinh viên', name: 'code' }]} handleSetFilter={setFilter} />
       <Separator className='my-4' />
       <ScoreView passedSubject={0} failedSubject={0} gpa={0} studentName='Nguyễn Văn A' studentCode='CT060111' />
       <Separator className='my-4' />
       <TableList
-        children={[
+        items={[
           { header: 'Tên môn học', value: 'name', className: 'min-w-[220px]' },
           { header: 'Số tín chỉ', value: 'credit', className: 'min-w-[80px]' },
           { header: 'Điểm thành phần 1', value: 'score1', className: 'min-w-[80px]' },
@@ -189,7 +188,7 @@ const ScoreManagementPage = () => {
         data={data}
       />
       <DetailDialog
-        children={[
+        items={[
           {
             type: 'input',
             label: 'Tên môn học',

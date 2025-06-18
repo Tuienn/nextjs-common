@@ -1,10 +1,8 @@
 'use client'
-
 import PageHeader from '@/components/common/page-header'
 import TableList from '@/components/role/education-admin/table-list'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 import { approveUniversity, getUniversityList, rejectUniversity } from '@/lib/api/university'
 import { cn } from '@/lib/utils'
 
@@ -46,7 +44,7 @@ const EducationManagementPage = () => {
     <>
       <PageHeader title='Quản lý tài khoản đào tạo' />
       <TableList
-        children={[
+        items={[
           { header: 'Mã trường', value: 'university_code', className: 'font-semibold text-blue-500 min-w-[100px]' },
           { header: 'Tên trường', value: 'university_name' },
           { header: 'Địa chỉ', value: 'address' },

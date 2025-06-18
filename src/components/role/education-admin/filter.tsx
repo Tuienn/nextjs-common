@@ -7,18 +7,18 @@ import { Form } from '@/components/ui/form'
 import { CustomZodFormItem } from '@/types/common'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { CircleX, CircleXIcon, SearchIcon } from 'lucide-react'
+import { CircleXIcon, SearchIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface Props {
-  children: CustomZodFormItem[]
+  items: CustomZodFormItem[]
   handleSetFilter: React.Dispatch<React.SetStateAction<any>>
 }
 
 const Filter: React.FC<Props> = (props) => {
   const formSchema = z.object(
-    props.children.reduce(
+    props.items.reduce(
       (acc, obj) => {
         acc[obj.name] = obj.validator || z.any()
         return acc
@@ -30,7 +30,7 @@ const Filter: React.FC<Props> = (props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...props.children.reduce(
+      ...props.items.reduce(
         (acc, obj) => {
           acc[obj.name] = obj.defaultValue || ''
           return acc
@@ -70,7 +70,7 @@ const Filter: React.FC<Props> = (props) => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5'>
-              {props.children.map((prop, index) => (
+              {props.items.map((prop, index) => (
                 <CustomFormItem {...prop} control={form.control} key={index} />
               ))}
             </div>

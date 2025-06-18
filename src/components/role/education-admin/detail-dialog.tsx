@@ -11,9 +11,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 interface Props {
-  children: CustomZodFormItem[]
+  items: CustomZodFormItem[]
   data: any
   mode: 'create' | 'update' | undefined
+  // eslint-disable-next-line no-unused-vars
   handleSubmit: (data: any) => void
   handleClose: () => void
   title?: string
@@ -24,7 +25,7 @@ const DetailDialog: React.FC<Props> = (props) => {
   const [localData, setLocalData] = useState(props.data)
 
   const formSchema = z.object(
-    props.children.reduce(
+    props.items.reduce(
       (acc, obj) => {
         acc[obj.name] = obj.validator || z.any()
         return acc
@@ -35,7 +36,7 @@ const DetailDialog: React.FC<Props> = (props) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: props.children.reduce(
+    defaultValues: props.items.reduce(
       (acc, obj) => {
         acc[obj.name] = obj.defaultValue || ''
         return acc
@@ -59,7 +60,7 @@ const DetailDialog: React.FC<Props> = (props) => {
     } else if (localMode === 'create') {
       form.reset()
     }
-  }, [localMode, localData])
+  }, [localMode, localData, form])
 
   const handleOpenChange = (open: boolean) => {
     if (open === false) {
@@ -81,7 +82,7 @@ const DetailDialog: React.FC<Props> = (props) => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(props.handleSubmit)} className='space-y-4'>
-            {props.children.map((prop, index) => (
+            {props.items.map((prop, index) => (
               <CustomFormItem {...prop} control={form.control} key={index} />
             ))}
             <DialogFooter>

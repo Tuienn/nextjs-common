@@ -34,6 +34,7 @@ export interface CustomFormItem {
       groups?: SelectGroup[]
     }
     querySelect?: {
+      // eslint-disable-next-line no-unused-vars
       queryFn: (keyword: string) => Promise<any>
     }
   }

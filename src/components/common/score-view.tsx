@@ -1,4 +1,4 @@
-import { BarChartIcon, ChartAreaIcon, CheckCheck, OctagonAlertIcon } from 'lucide-react'
+import { ChartAreaIcon, CheckCheck, OctagonAlertIcon } from 'lucide-react'
 import FastView from './fast-view'
 import { Badge } from '../ui/badge'
 

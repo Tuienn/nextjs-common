@@ -12,6 +12,7 @@ import { createVerifyCode } from '@/lib/api/certificate'
 import CustomFormItem from '@/components/common/ct-form-item'
 import { mutate } from 'swr'
 import { showNotification } from '@/lib/utils/common'
+import { Dispatch, SetStateAction } from 'react'
 
 const permissionType = [
   {
@@ -41,7 +42,7 @@ type FormSchema = z.infer<typeof formSchema>
 
 interface Props {
   open: boolean
-  handleSetOpen: (open: boolean) => void
+  handleSetOpen: Dispatch<SetStateAction<boolean>>
   swrKey: string
 }
 

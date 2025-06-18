@@ -112,7 +112,7 @@ const StudentScorePage = () => {
       <ScoreView passedSubject={0} failedSubject={0} gpa={0} />
       <Separator className='my-4' />
       <TableList
-        children={[
+        items={[
           { header: 'Tên môn học', value: 'name', className: 'min-w-[220px]' },
           { header: 'Điểm thành phần 1', value: 'score1', className: 'min-w-[80px]' },
           { header: 'Điểm thành phần 2', value: 'score2', className: 'min-w-[80px]' },

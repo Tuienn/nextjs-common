@@ -80,7 +80,7 @@ export default function StudentDashboard() {
       <DecriptionView
         title='Thông tin cá nhân'
         description='Thông tin chi tiết về hồ sơ sinh viên'
-        children={personalInfoItems}
+        items={personalInfoItems}
       />
     </div>
   )
