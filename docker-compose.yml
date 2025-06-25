@@ -1,6 +1,6 @@
 services:
   nextjs-app:
-    image: node:24.0.1
+    image: node:24-alpine3.21
     container_name: certificate-system-fe
     working_dir: /
     user: node
